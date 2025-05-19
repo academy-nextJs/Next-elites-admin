@@ -8,12 +8,6 @@ export default [
     navLink: "/home",
   },
   {
-    id: "secondPage",
-    title: "Second Page",
-    icon: <Mail size={20} />,
-    navLink: "/second-page",
-  },
-  {
     id: "chat",
     title: "Chat",
     icon: <MessageSquare size={20} />,
