@@ -30,7 +30,7 @@ const EditCityModal = ({ isOpen, toggle, cityData, onSubmit }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle}>
+    <Modal className="yekan" isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>ویرایش مقصد</ModalHeader>
       <ModalBody>
         <FormGroup>

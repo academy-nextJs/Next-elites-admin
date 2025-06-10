@@ -1,14 +1,22 @@
 import { Edit, Trash2 } from "react-feather";
 import { useState } from "react";
 import EditCityModal from "./EditCityModal";
+import WarningModal from "./WarningModal";
 
 const CityCard = ({ city, imageUrl, onEdit, onDelete, lat, lng }) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [warningModalOpen, setWarningModalOpen] = useState(false); // State for warning modal
 
   const toggleEditModal = () => setEditModalOpen(!editModalOpen);
+  const toggleWarningModal = () => setWarningModalOpen(!warningModalOpen); // Toggle function for warning modal
 
   const handleEditSubmit = (data) => {
     onEdit(data);
+  };
+
+  const handleDeleteConfirm = () => {
+    onDelete();
+    toggleWarningModal();
   };
 
   return (
@@ -43,7 +51,7 @@ const CityCard = ({ city, imageUrl, onEdit, onDelete, lat, lng }) => {
           </button>
 
           <button
-            onClick={onDelete}
+            onClick={toggleWarningModal} // Open the warning modal on delete button click
             className="btn btn-outline-danger btn-sm rounded-pill d-flex align-items-center"
           >
             <Trash2 size={16} className="me-1" />
@@ -57,6 +65,12 @@ const CityCard = ({ city, imageUrl, onEdit, onDelete, lat, lng }) => {
         toggle={toggleEditModal}
         cityData={{ city, location: [lat, lng] }}
         onSubmit={handleEditSubmit}
+      />
+
+      <WarningModal
+        isOpen={warningModalOpen}
+        toggle={toggleWarningModal}
+        onConfirm={handleDeleteConfirm}
       />
     </div>
   );
