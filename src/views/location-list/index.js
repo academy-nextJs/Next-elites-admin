@@ -7,6 +7,7 @@ import MapComponent from "../components/map/map";
 import CityCard from "./card";
 import PageHeader from "./header";
 import toast from "react-hot-toast";
+import { deleteLocation } from "../../utility/services/api/delete/Location";
 
 const LocationListContainer = () => {
   const location = useLocation();
@@ -37,11 +38,24 @@ const LocationListContainer = () => {
           data.id
         ),
         {
-          pending: "درحال پردازش",
+          loading: "درحال پردازش",
         }
       ),
     onSuccess: () => {
       toast.success("مقصد شما با موفقیت ویرایش شد");
+      refetch();
+    },
+  });
+
+  const { mutate: deleteCity } = useMutation({
+    mutationKey: ["DELETE_LOCATIONS"],
+    mutationFn: (id) =>
+      toast.promise(deleteLocation(id), {
+        loading: "درحال پردازش...",
+        error: "خطا !",
+      }),
+    onSuccess: () => {
+      toast.success("مقصد با موفقیت حذف شد");
       refetch();
     },
   });
@@ -70,7 +84,7 @@ const LocationListContainer = () => {
                 id: item.id,
               })
             }
-            onDelete={() => console.log("Delete clicked")}
+            onDelete={() => deleteCity(item.id)}
           />
         ))}
       </PerfectScrollbar>
