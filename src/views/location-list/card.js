@@ -1,6 +1,16 @@
 import { Edit, Trash2 } from "react-feather";
+import { useState } from "react";
+import EditCityModal from "./EditCityModal";
 
-const CityCard = ({ city, imageUrl, onEdit, onDelete }) => {
+const CityCard = ({ city, imageUrl, onEdit, onDelete, lat, lng }) => {
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
+  const toggleEditModal = () => setEditModalOpen(!editModalOpen);
+
+  const handleEditSubmit = (data) => {
+    onEdit(data);
+  };
+
   return (
     <div
       className="card shadow-sm"
@@ -25,7 +35,7 @@ const CityCard = ({ city, imageUrl, onEdit, onDelete }) => {
 
         <div className="mt-auto d-flex justify-content-between align-items-center">
           <button
-            onClick={onEdit}
+            onClick={toggleEditModal}
             className="btn btn-outline-primary btn-sm rounded-pill d-flex align-items-center"
           >
             <Edit size={16} className="me-1" />
@@ -41,6 +51,13 @@ const CityCard = ({ city, imageUrl, onEdit, onDelete }) => {
           </button>
         </div>
       </div>
+
+      <EditCityModal
+        isOpen={editModalOpen}
+        toggle={toggleEditModal}
+        cityData={{ city, location: [lat, lng] }}
+        onSubmit={handleEditSubmit}
+      />
     </div>
   );
 };

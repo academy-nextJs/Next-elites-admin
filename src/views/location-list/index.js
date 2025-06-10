@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import PerfectScrollbar from "react-perfect-scrollbar";
+import { useLocation } from "react-router-dom";
+import { getAllLocations } from "../../utility/services/api/get/Location";
+import { editLocation } from "../../utility/services/api/put/Location";
 import MapComponent from "../components/map/map";
 import CityCard from "./card";
 import PageHeader from "./header";
-import { getAllLocations } from "../../utility/services/api/get/Location";
-import { useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const LocationListContainer = () => {
   const location = useLocation();
@@ -22,6 +24,28 @@ const LocationListContainer = () => {
       getAllLocations({ area_name: area_name || undefined, limit }),
   });
 
+  const { mutate } = useMutation({
+    mutationKey: ["PUT_LOCATIONS"],
+    mutationFn: (data) =>
+      toast.promise(
+        editLocation(
+          {
+            area_name: data.area_name,
+            lat: data.lat,
+            lng: data.lng,
+          },
+          data.id
+        ),
+        {
+          pending: "درحال پردازش",
+        }
+      ),
+    onSuccess: () => {
+      toast.success("مقصد شما با موفقیت ویرایش شد");
+      refetch();
+    },
+  });
+
   return (
     <div className="w-100 font-yekan d-inline-flex align-items-start vh-100 flex-wrap">
       <PageHeader refetch={refetch} />
@@ -31,10 +55,21 @@ const LocationListContainer = () => {
       >
         {data?.map((item) => (
           <CityCard
+            lat={item.lat ? item.lat : 32}
+            lng={item.lng ? item.lng : 55}
             key={item.id}
             city={item.area_name}
-            imageUrl={"https://lh4.googleusercontent.com/proxy/n8E8rmkkpzxwMtRS_6leSVWYervfJMfZvcHr8J3eed9OcLa5_prcGBbeYfHIOUzAXKYDyHRatB9ZWKWuVEbCDMIAoJk7rjEZ2_GqZR6GI-GVSTwjXKygkg"}
-            onEdit={() => console.log("Edit clicked")}
+            imageUrl={
+              "https://lh4.googleusercontent.com/proxy/n8E8rmkkpzxwMtRS_6leSVWYervfJMfZvcHr8J3eed9OcLa5_prcGBbeYfHIOUzAXKYDyHRatB9ZWKWuVEbCDMIAoJk7rjEZ2_GqZR6GI-GVSTwjXKygkg"
+            }
+            onEdit={(data) =>
+              mutate({
+                area_name: data.area_name,
+                lat: data.lat,
+                lng: data.lng,
+                id: item.id,
+              })
+            }
             onDelete={() => console.log("Delete clicked")}
           />
         ))}

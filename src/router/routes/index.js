@@ -41,7 +41,7 @@ const RealEstateList = lazy(() => import("../../pages/RealEstateList"));
 
 const getHomeRoute = () => {
   const token = getItem("accessToken");
-  const user = jwtDecode(token);
+  const user = typeof token == "string" &&  jwtDecode(token);
   if (user) {
     return "/home";
   } else {

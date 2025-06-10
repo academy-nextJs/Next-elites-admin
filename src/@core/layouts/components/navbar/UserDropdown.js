@@ -31,7 +31,7 @@ import { getItem } from "../../../../utility/services/local storage/storage.serv
 
 const UserDropdown = () => {
   const token = getItem("accessToken");
-  const user = jwtDecode(token);
+  const user = typeof token == "string" && jwtDecode(token);
   return (
     <UncontrolledDropdown tag="li" className="dropdown-user nav-item">
       <DropdownToggle
