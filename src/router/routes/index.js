@@ -6,15 +6,19 @@ const Chat = lazy(() => import("../../views/apps/chat"));
 
 // ** Layouts
 import BlankLayout from "@layouts/BlankLayout";
-import VerticalLayout from "@src/layouts/VerticalLayout";
-import HorizontalLayout from "@src/layouts/HorizontalLayout";
 import LayoutWrapper from "@src/@core/layouts/components/layout-wrapper";
+import HorizontalLayout from "@src/layouts/HorizontalLayout";
+import VerticalLayout from "@src/layouts/VerticalLayout";
 
 // ** Route Components
 import PublicRoute from "@components/routes/PublicRoute";
 
 // ** Utils
 import { isObjEmpty } from "@utils";
+import LocationsList from "../../pages/LocationsList";
+import { getItem } from "../../utility/services/local storage/storage.services";
+
+import { jwtDecode } from "jwt-decode";
 
 const getLayout = {
   blank: <BlankLayout />,
@@ -29,19 +33,28 @@ const TemplateTitle = "%s - Vuexy React Admin Template";
 const DefaultRoute = "/home";
 
 const Home = lazy(() => import("../../pages/Home"));
-const SecondPage = lazy(() => import("../../pages/SecondPage"));
 const Login = lazy(() => import("../../pages/Login"));
 const Register = lazy(() => import("../../pages/Register"));
-const ForgotPassword = lazy(() => import("../../pages/ForgotPassword"));
 const Error = lazy(() => import("../../pages/Error"));
-const Sample = lazy(() => import("../../pages/Sample"));
+const TourManagement = lazy(() => import("../../pages/ToursList"));
+const RealEstateList = lazy(() => import("../../pages/RealEstateList"));
+
+const getHomeRoute = () => {
+  const token = getItem("accessToken");
+  const user = jwtDecode(token);
+  if (user) {
+    return "/home";
+  } else {
+    return "/login";
+  }
+};
 
 // ** Merge Routes
 const Routes = [
   {
     path: "/",
     index: true,
-    element: <Navigate replace to={DefaultRoute} />,
+    element: <Navigate replace to={getHomeRoute()} />,
   },
   {
     path: "/home",
@@ -56,12 +69,16 @@ const Routes = [
     },
   },
   {
-    path: "/sample",
-    element: <Sample />,
+    path: "/tours-management/list",
+    element: <TourManagement />,
   },
   {
-    path: "/second-page",
-    element: <SecondPage />,
+    path: "/real-estate-management/list",
+    element: <RealEstateList />,
+  },
+  {
+    path: "/locations-management/list",
+    element: <LocationsList />,
   },
   {
     path: "/login",
@@ -73,13 +90,6 @@ const Routes = [
   {
     path: "/register",
     element: <Register />,
-    meta: {
-      layout: "blank",
-    },
-  },
-  {
-    path: "/forgot-password",
-    element: <ForgotPassword />,
     meta: {
       layout: "blank",
     },
@@ -171,4 +181,4 @@ const getRoutes = (layout) => {
   return AllRoutes;
 };
 
-export { DefaultRoute, TemplateTitle, Routes, getRoutes };
+export { DefaultRoute, getRoutes, Routes, TemplateTitle };

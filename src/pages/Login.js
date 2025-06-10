@@ -26,9 +26,34 @@ import illustrationsDark from "@src/assets/images/pages/login-v2-dark.svg";
 
 // ** Styles
 import "@styles/react/pages/page-authentication.scss";
+import { useLoginUser } from "../utility/hooks/useLoginUser";
+import { useFormik } from "formik";
+
+import * as Yup from "yup";
 
 const Login = () => {
   const { skin } = useSkin();
+  const LoginSchema = Yup.object().shape({
+    email: Yup.string().required("ایمیل الزامی است"),
+    password: Yup.string().required("رمز عبور الزامی است"),
+  });
+  const { mutate } = useLoginUser();
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: LoginSchema,
+    onSubmit: async (value) => {
+      console.log(value);
+      mutate(value);
+    },
+  });
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    formik.handleSubmit();
+  };
 
   const source = skin === "dark" ? illustrationsDark : illustrationsLight;
 
@@ -121,15 +146,14 @@ const Login = () => {
             <CardText className="mb-2">
               Please sign-in to your account and start the adventure
             </CardText>
-            <Form
-              className="auth-login-form mt-2"
-              onSubmit={(e) => e.preventDefault()}
-            >
+            <Form className="auth-login-form mt-2" onSubmit={handleSubmit}>
               <div className="mb-1">
                 <Label className="form-label" for="login-email">
                   Email
                 </Label>
                 <Input
+                  onChange={formik.handleChange}
+                  name="email"
                   type="email"
                   id="login-email"
                   placeholder="john@example.com"
@@ -146,6 +170,8 @@ const Login = () => {
                   </Link>
                 </div>
                 <InputPasswordToggle
+                  name="password"
+                  onChange={formik.handleChange}
                   className="input-group-merge"
                   id="login-password"
                 />
@@ -156,7 +182,7 @@ const Login = () => {
                   Remember Me
                 </Label>
               </div>
-              <Button tag={Link} to="/" color="primary" block>
+              <Button type="submit" color="primary" block>
                 Sign in
               </Button>
             </Form>

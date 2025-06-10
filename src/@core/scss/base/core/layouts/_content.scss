@@ -90,8 +90,8 @@ html {
       .content-header-title {
         font-weight: 500;
         color: $gray-400;
-        padding-right: $spacer;
-        border-right: 1px solid lighten($gray-600, 10%);
+        padding-left: $spacer;
+        border-left: 1px solid lighten($gray-600, 10%);
       }
       .content-header-right {
         .dropdown-toggle {

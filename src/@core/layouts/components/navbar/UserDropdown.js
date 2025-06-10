@@ -26,8 +26,12 @@ import {
 
 // ** Default Avatar Image
 import defaultAvatar from "@src/assets/images/portrait/small/avatar-s-11.jpg";
+import { jwtDecode } from "jwt-decode";
+import { getItem } from "../../../../utility/services/local storage/storage.services";
 
 const UserDropdown = () => {
+  const token = getItem("accessToken");
+  const user = jwtDecode(token);
   return (
     <UncontrolledDropdown tag="li" className="dropdown-user nav-item">
       <DropdownToggle
@@ -37,11 +41,11 @@ const UserDropdown = () => {
         onClick={(e) => e.preventDefault()}
       >
         <div className="user-nav d-sm-flex d-none">
-          <span className="user-name fw-bold">John Doe</span>
-          <span className="user-status">Admin</span>
+          <span className="user-name fw-bold">{user.name}</span>
+          <span className="user-status">{user.role}</span>
         </div>
         <Avatar
-          img={defaultAvatar}
+          img={user.profilePicture}
           imgHeight="40"
           imgWidth="40"
           status="online"

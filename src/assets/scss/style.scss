@@ -9,3 +9,58 @@ NOTE:
 ------
 PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
 WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../fonts/IRANYekanXFaNum-Regular.ttf") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../fonts/IRANYekanXFaNum-Medium.ttf") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../fonts/IRANYekanXFaNum-DemiBold.ttf") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../fonts/IRANYekanXFaNum-Bold.ttf") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../../../public/fonts/IRANYekanXFaNum-Black.ttf") format("woff");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../fonts/IRANYekanXFaNum-Heavy.ttf") format("woff");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+.primary {
+  color: #586cff;
+}
+
+.yekan {
+  font-family: Yekan !important;
+}

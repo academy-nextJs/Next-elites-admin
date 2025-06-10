@@ -105,3 +105,31 @@ model TourRegistration {
 
   @@unique([phoneNumber, tourId], name: "unique_registration_per_tour")
 }
+
+model RealEstate {
+  id                 String   @id
+  rate               Float
+  name               String
+  yearOfEstablish    Int
+  founder            String
+  city               String
+  image              String
+  address            String
+  phoneNumber        BigInt
+  supportNumber      BigInt
+  email              String   @unique
+  website            String
+  registrationNumber BigInt
+  nationalCode       BigInt
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime
+  founderImage       String?
+  lat                Int?
+  lng                Int?
+  storyOfFoundation  String?
+
+  @@index([city])
+  @@index([name])
+  @@index([nationalCode])
+  @@index([registrationNumber])
+}

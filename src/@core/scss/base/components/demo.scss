@@ -87,6 +87,11 @@
 #component-breadcrumbs .breadcrumb:not(last-child){
   margin-bottom: .5rem;
 }
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  padding-bottom: 20px;
+}
 #breadcrumb-alignment {
   .breadcrumb-wrapper {
     box-shadow: 1px 1px 10px rgba($black, 0.1);

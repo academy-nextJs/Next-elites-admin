@@ -47,7 +47,7 @@ const BreadCrumbs = (props) => {
   };
 
   return (
-    <div className="content-header row">
+    <div className="content-header row" dir="rtl">
       <div className="content-header-left col-md-9 col-12 mb-2">
         <div className="row breadcrumbs-top">
           <div className="col-12">
@@ -58,8 +58,8 @@ const BreadCrumbs = (props) => {
             )}
             <div className="breadcrumb-wrapper vs-breadcrumbs d-sm-block d-none col-12">
               <Breadcrumb>
-                <BreadcrumbItem tag="li">
-                  <Link to="/">Home</Link>
+                <BreadcrumbItem tag="li" className="pr">
+                  <Link to="/">خانه</Link>
                 </BreadcrumbItem>
                 {renderBreadCrumbs()}
               </Breadcrumb>
