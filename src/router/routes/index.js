@@ -19,6 +19,8 @@ import LocationsList from "../../pages/LocationsList";
 import { getItem } from "../../utility/services/local storage/storage.services";
 
 import { jwtDecode } from "jwt-decode";
+import CategoriesList from "../../pages/CategoriesList";
+import CommentsList from "../../pages/CommentsList";
 
 const getLayout = {
   blank: <BlankLayout />,
@@ -41,7 +43,7 @@ const RealEstateList = lazy(() => import("../../pages/RealEstateList"));
 
 const getHomeRoute = () => {
   const token = getItem("accessToken");
-  const user = typeof token == "string" &&  jwtDecode(token);
+  const user = typeof token == "string" && jwtDecode(token);
   if (user) {
     return "/home";
   } else {
@@ -79,6 +81,14 @@ const Routes = [
   {
     path: "/locations-management/list",
     element: <LocationsList />,
+  },
+  {
+    path: "/categories-management/list",
+    element: <CategoriesList />,
+  },
+  {
+    path: "/comments-management/list",
+    element: <CommentsList />,
   },
   {
     path: "/login",

@@ -11,7 +11,7 @@ export async function createLocation(payload) {
     const response = await http.post(`/locations`, payload);
     return response;
   } catch (error) {
-    console.error("Error fetching locations:", error);
+    console.error("Error creating location:", error);
     throw error;
   }
 }

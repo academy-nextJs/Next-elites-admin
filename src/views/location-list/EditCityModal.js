@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  FormGroup,
-  Label,
-  Input,
-} from "reactstrap";
+import { Button, FormGroup, Label, Input } from "reactstrap";
 import MapComponent from "../components/map/map";
+import ReusableModal from "../../@core/common/Modal";
 
 const EditCityModal = ({ isOpen, toggle, cityData, onSubmit }) => {
   const [cityName, setCityName] = useState(cityData.city || "");
@@ -29,36 +21,46 @@ const EditCityModal = ({ isOpen, toggle, cityData, onSubmit }) => {
     toggle();
   };
 
+  const bodyContent = (
+    <>
+      <FormGroup>
+        <Label for="cityName">نام شهر</Label>
+        <Input
+          id="cityName"
+          type="text"
+          value={cityName}
+          onChange={(e) => setCityName(e.target.value)}
+        />
+      </FormGroup>
+      <div style={{ height: "300px" }}>
+        <MapComponent
+          initialLocation={location}
+          initialZoom={5}
+          onMapClick={handleMapClick}
+        />
+      </div>
+    </>
+  );
+
+  const footerActions = (
+    <>
+      <Button color="primary" onClick={handleSubmit}>
+        تایید
+      </Button>
+      <Button color="secondary" onClick={toggle}>
+        لغو
+      </Button>
+    </>
+  );
+
   return (
-    <Modal className="yekan" isOpen={isOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle}>ویرایش مقصد</ModalHeader>
-      <ModalBody>
-        <FormGroup>
-          <Label for="cityName">نام شهر</Label>
-          <Input
-            id="cityName"
-            type="text"
-            value={cityName}
-            onChange={(e) => setCityName(e.target.value)}
-          />
-        </FormGroup>
-        <div style={{ height: "300px" }}>
-          <MapComponent
-            initialLocation={location}
-            initialZoom={5}
-            onMapClick={handleMapClick}
-          />
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="primary" onClick={handleSubmit}>
-          Submit
-        </Button>
-        <Button color="secondary" onClick={toggle}>
-          Cancel
-        </Button>
-      </ModalFooter>
-    </Modal>
+    <ReusableModal
+      isOpen={isOpen}
+      toggle={toggle}
+      title="ویرایش مقصد"
+      bodyContent={bodyContent}
+      footerActions={footerActions}
+    />
   );
 };
 

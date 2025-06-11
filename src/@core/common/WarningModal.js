@@ -1,10 +1,10 @@
 import React from "react";
 import { Button } from "reactstrap";
-import ReusableModal from "../../@core/common/Modal";
+import ReusableModal from "./Modal";
 
-const WarningModal = ({ isOpen, toggle, onConfirm }) => {
+const WarningModal = ({ isOpen, toggle, title = "Warning", message, onConfirm }) => {
   const bodyContent = (
-    <p>آیا از حذف کردن این مقصد مطمعنید؟</p>
+    <p>{message}</p>
   );
 
   const footerActions = (
@@ -18,7 +18,7 @@ const WarningModal = ({ isOpen, toggle, onConfirm }) => {
     <ReusableModal
       isOpen={isOpen}
       toggle={toggle}
-      title="هشدار"
+      title={title}
       bodyContent={bodyContent}
       footerActions={footerActions}
     />

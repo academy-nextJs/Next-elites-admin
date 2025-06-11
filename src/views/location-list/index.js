@@ -14,13 +14,13 @@ const LocationListContainer = () => {
   const searchParams = new URLSearchParams(location.search);
   const area_name = searchParams.get("area_name") || "";
   const limit = searchParams.get("limit") || "10";
-
+  const queryKey = ["GET_LOCATIONS", limit];
   if (area_name) {
     queryKey.push(area_name);
   }
 
   const { data, refetch, isPending } = useQuery({
-    queryKey: ["GET_LOCATIONS"],
+    queryKey,
     queryFn: () =>
       getAllLocations({ area_name: area_name || undefined, limit }),
   });

@@ -2,6 +2,7 @@ import {
   Box,
   Home,
   Image,
+  Layers,
   List,
   Map,
   MessageSquare,
@@ -70,11 +71,31 @@ export default [
         icon: <List size={50} />,
         navLink: "/locations-management/list",
       },
+    ],
+  },
+  {
+    id: "categories",
+    title: "دسته بندی ها",
+    icon: <Layers />,
+    children: [
       {
-        id: "locationCreate",
-        title: "ساخت",
-        icon: <PlusCircle size={50} />,
-        navLink: "/locations/create",
+        id: "categoriesList",
+        title: "لیست",
+        icon: <List size={50} />,
+        navLink: "/categories-management/list",
+      },
+    ],
+  },
+  {
+    id: "comments",
+    title: "نظرات",
+    icon: <MessageSquare />,
+    children: [
+      {
+        id: "locationList",
+        title: "لیست",
+        icon: <List size={50} />,
+        navLink: "/locations-management/list",
       },
     ],
   },

@@ -6,12 +6,12 @@ import http from "../../../interceptor";
  * @param params Object containing query parameters like `page` and `limit`
  * @returns response with array of objects including all locations.
  */
-export async function editLocation(payload, id) {
+export async function editCategory(payload, id) {
   try {
-    const response = await http.put(`/locations/${id}`, payload);
+    const response = await http.put(`/categories/${id}`, payload);
     return response;
   } catch (error) {
-    console.error("Error editing locations:", error);
+    console.error("Error editing category:", error);
     throw error;
   }
 }
