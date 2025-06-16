@@ -7,6 +7,7 @@ const ReusableTable = ({
   renderRow,
   headerContent,
   pageTitle,
+  headerStyle,
 }) => {
   const { skin } = useSkin();
   return (
@@ -23,7 +24,10 @@ const ReusableTable = ({
         <thead>
           <tr className="text-center">
             {headers.map((header, index) => (
-              <th key={index} style={{ fontSize: "18px" }}>
+              <th
+                key={index}
+                style={headerStyle ? headerStyle : { fontSize: "18px" }}
+              >
                 {header}
               </th>
             ))}

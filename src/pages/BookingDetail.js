@@ -1,6 +1,6 @@
+import ViewBookingContainer from "../views/view-booking";
+
 const BookingDetail = () => {
-  return (
-    <div>BookingDetail</div>
-  )
-}
-export default BookingDetail
+  return <ViewBookingContainer />;
+};
+export default BookingDetail;
