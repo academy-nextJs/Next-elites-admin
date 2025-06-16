@@ -19,7 +19,7 @@ const LocationListContainer = () => {
     queryKey.push(area_name);
   }
 
-  const { data, refetch, isPending } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey,
     queryFn: () =>
       getAllLocations({ area_name: area_name || undefined, limit }),

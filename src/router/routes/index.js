@@ -20,7 +20,7 @@ import { getItem } from "../../utility/services/local storage/storage.services";
 
 import { jwtDecode } from "jwt-decode";
 import CategoriesList from "../../pages/CategoriesList";
-import CommentsList from "../../pages/CommentsList";
+import DiscountList from "../../pages/DiscountList";
 
 const getLayout = {
   blank: <BlankLayout />,
@@ -39,7 +39,17 @@ const Login = lazy(() => import("../../pages/Login"));
 const Register = lazy(() => import("../../pages/Register"));
 const Error = lazy(() => import("../../pages/Error"));
 const TourManagement = lazy(() => import("../../pages/ToursList"));
-const RealEstateList = lazy(() => import("../../pages/RealEstateList"));
+const HousesList = lazy(() => import("../../pages/HousesList"));
+const HouseDetail = lazy(() => import("../../pages/HouseDetail"));
+const BookingsList = lazy(() => import("../../pages/BookingsList"));
+const BookingDetail = lazy(() => import("../../pages/BookingDetail"));
+const UsersList = lazy(() => import("../../pages/UsersList"));
+const UserDetail = lazy(() => import("../../pages/UserDetail"));
+const ContactUsMessages = lazy(() =>
+  import("../../pages/ContactUsMessagesList")
+);
+const CommentDetail = lazy(() => import("../../pages/CommentDetail"));
+const CommentsList = lazy(() => import("../../pages/CommentsList"));
 
 const getHomeRoute = () => {
   const token = getItem("accessToken");
@@ -71,12 +81,44 @@ const Routes = [
     },
   },
   {
-    path: "/tours-management/list",
-    element: <TourManagement />,
+    path: "/houses-management/list",
+    element: <HousesList />,
   },
   {
-    path: "/real-estate-management/list",
-    element: <RealEstateList />,
+    path: "/houses-management/:id",
+    element: <HouseDetail />,
+  },
+  {
+    path: "/bookings-management/list",
+    element: <BookingsList />,
+  },
+  {
+    path: "/bookings-management/:id",
+    element: <BookingDetail />,
+  },
+  {
+    path: "/users-management/list",
+    element: <UsersList />,
+  },
+  {
+    path: "/users-management/:id",
+    element: <UserDetail />,
+  },
+  {
+    path: "/contactUs-management/list",
+    element: <ContactUsMessages />,
+  },
+  {
+    path: "/comments-management/list",
+    element: <CommentsList />,
+  },
+  {
+    path: "/comments-management/:id",
+    element: <CommentDetail />,
+  },
+  {
+    path: "/tours-management/list",
+    element: <TourManagement />,
   },
   {
     path: "/locations-management/list",
@@ -87,8 +129,8 @@ const Routes = [
     element: <CategoriesList />,
   },
   {
-    path: "/comments-management/list",
-    element: <CommentsList />,
+    path: "/discounts-management/list",
+    element: <DiscountList />,
   },
   {
     path: "/login",
