@@ -14,7 +14,7 @@ export default function Popover({ items }) {
         className="btn p-0 border-0 bg-transparent shadow-none"
         style={{ boxShadow: "none" }}
       >
-        <MoreVertical size={18} />
+        <MoreVertical />
       </DropdownToggle>
       <DropdownMenu>
         {items.map(({ label, icon: Icon, onClick, className }, i) => (

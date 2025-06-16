@@ -1,4 +1,4 @@
-import HouseDetailContainer from "../views/view"
+import HouseDetailContainer from "../views/view-house"
 
 const HouseDetail = () => {
   return (

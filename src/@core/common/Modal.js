@@ -13,7 +13,7 @@ const ReusableModal = ({ isOpen, toggle, title, bodyContent, footerActions }) =>
           footerActions
         ) : (
           <>
-            <Button color="secondary" onClick={toggle}>Close</Button>
+            <Button color="secondary" onClick={toggle}>بستن</Button>
           </>
         )}
       </ModalFooter>
