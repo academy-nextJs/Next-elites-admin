@@ -1,9 +1,9 @@
 // Interceptor
 import http from "../../../interceptor";
 
-export async function getAllUsers() {
+export async function getAllUsers(params = {}) {
   try {
-    const response = await http.get(`/admin/users`);
+    const response = await http.get(`/admin/users`, { params });
     return response;
   } catch (error) {
     console.error("Error fetching users:", error);

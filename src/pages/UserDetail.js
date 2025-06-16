@@ -1,6 +1,6 @@
+import ViewUserContainer from "../views/view-user";
+
 const UserDetail = () => {
-  return (
-    <div>UserDetail</div>
-  )
-}
-export default UserDetail
+  return <ViewUserContainer />;
+};
+export default UserDetail;
