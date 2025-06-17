@@ -1,55 +1,33 @@
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
-  CardText,
-  CardLink,
-} from "reactstrap";
+// ** React Imports
+
+// ** Reactstrap Imports
+import { Col, Row } from "reactstrap";
+
+// ** Demo Components
+import CardMedal from "../views/cards/CardMedal";
+import StatsCard from "../views/cards/StatsCard";
+
+// ** Styles
+import "@styles/base/pages/dashboard-ecommerce.scss";
+import "@styles/react/libs/charts/apex-charts.scss";
+import { useQuery } from "@tanstack/react-query";
+import { getDashboardStatus } from "../utility/services/api/get/Dashboard";
 
 const Home = () => {
+  const { data: dashboardStatus } = useQuery({
+    queryKey: ["DASHBOARD"],
+    queryFn: getDashboardStatus,
+  });
   return (
-    <div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Kick start your project 🚀</CardTitle>
-        </CardHeader>
-        <CardBody>
-          <CardText>All the best for your new project.</CardText>
-          <CardText>
-            Please make sure to read our{" "}
-            <CardLink
-              href="https://pixinvent.com/demo/vuexy-react-admin-dashboard-template/documentation/"
-              target="_blank"
-            >
-              Template Documentation
-            </CardLink>{" "}
-            to understand where to go from here and how to use our template.
-          </CardText>
-        </CardBody>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Want to integrate JWT? 🔒</CardTitle>
-        </CardHeader>
-        <CardBody>
-          <CardText>
-            We carefully crafted JWT flow so you can implement JWT with ease and
-            with minimum efforts.
-          </CardText>
-          <CardText>
-            Please read our{" "}
-            <CardLink
-              href="https://pixinvent.com/demo/vuexy-react-admin-dashboard-template/documentation/docs/development/auth"
-              target="_blank"
-            >
-              JWT Documentation
-            </CardLink>{" "}
-            to get more out of JWT authentication.
-          </CardText>
-        </CardBody>
-      </Card>
+    <div id="dashboard-ecommerce">
+      <Row className="match-height">
+        <Col xl="4" md="6" xs="12">
+          <CardMedal />
+        </Col>
+        <Col xl="8" md="6" xs="12">
+          <StatsCard data={dashboardStatus} cols={{ xl: "3", sm: "6" }} />
+        </Col>
+      </Row>
     </div>
   );
 };

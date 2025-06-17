@@ -24,11 +24,12 @@ const LayoutWrapper = (props) => {
 
   // ** Store Vars
   const dispatch = useDispatch();
-  const store = useSelector((state) => state);
+  const store = useSelector((state) => state.layout);
+  const navStore = useSelector((state) => state.navbar);
 
-  const navbarStore = store.navbar;
-  const layoutStored = store.layout.layout;
-  const contentWidth = store.layout.contentWidth;
+  const navbarStore = navStore;
+  const layoutStored = store.layout;
+  const contentWidth = store.contentWidth;
   //** Vars
   const appLayoutCondition =
     (layoutStored.layout === "horizontal" && !routeMeta) ||
@@ -40,21 +41,18 @@ const LayoutWrapper = (props) => {
     if (routeMeta) {
       if (
         routeMeta.contentWidth &&
-        routeMeta.contentWidth === store.layout.contentWidth
+        routeMeta.contentWidth === store.contentWidth
       ) {
         dispatch(handleContentWidth(themeConfig.layout.contentWidth));
       }
       if (
         routeMeta.menuCollapsed &&
-        routeMeta.menuCollapsed === store.layout.menuCollapsed
+        routeMeta.menuCollapsed === store.menuCollapsed
       ) {
-        dispatch(handleMenuCollapsed(!store.layout.menuCollapsed));
+        dispatch(handleMenuCollapsed(!store.menuCollapsed));
       }
-      if (
-        routeMeta.menuHidden &&
-        routeMeta.menuHidden === store.layout.menuHidden
-      ) {
-        dispatch(handleMenuHidden(!store.layout.menuHidden));
+      if (routeMeta.menuHidden && routeMeta.menuHidden === store.menuHidden) {
+        dispatch(handleMenuHidden(!store.menuHidden));
       }
     }
   };

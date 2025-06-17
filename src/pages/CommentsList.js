@@ -62,68 +62,13 @@ const CommentsList = React.memo(() => {
     keepPreviousData: true,
   });
 
-  const headers = [
-    "کاربر",
-    "عنوان",
-    "توضیحات",
-    "امتیاز",
-    "تاریخ ایجاد",
-    "عملیات",
-  ];
+  const headers = ["عنوان", "توضیحات", "امتیاز", "تاریخ ایجاد", "عملیات"];
 
   const renderRow = useCallback((comment) => {
-    const { data: userData } = useQuery({
-      queryKey: ["user", comment.user_id],
-      queryFn: () => getUserById(comment.user_id),
-      enabled: comment.user_id != null,
-    });
 
-    const [tooltipOpen, setTooltipOpen] = useState(false);
-
-    const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
 
     return (
       <>
-        <td>
-          <div className="d-flex align-items-center flex-column justify-content-center">
-            {userData?.user.profilePicture ? (
-              <div className="avatar" id={`tooltip-${comment.user_id}`}>
-                <img
-                  src={userData?.user.profilePicture}
-                  alt="Profile"
-                  className="rounded-circle"
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    border: "2px solid #ccc",
-                    cursor: "pointer",
-                  }}
-                />
-              </div>
-            ) : (
-              <img
-                src="https://img.icons8.com/?size=100&id=0lg0kb05hrOz&format=png&color=000000"
-                alt="Profile"
-                className="rounded-circle"
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  border: "2px solid #ccc",
-                  cursor: "pointer",
-                }}
-                id={`tooltip-${comment.user_id}`}
-              />
-            )}
-            <Tooltip
-              isOpen={tooltipOpen}
-              target={`tooltip-${comment.user_id}`}
-              toggle={toggleTooltip}
-              fade={true}
-            >
-              {userData?.user.fullName}
-            </Tooltip>
-          </div>
-        </td>
         <td
           style={{
             maxWidth: "150px",
@@ -240,7 +185,7 @@ const CommentsList = React.memo(() => {
               </Col>
             }
             headers={headers}
-            data={commentsData || []}
+            data={commentsData.data || []}
             renderRow={renderRow}
           />
           <Pagination className="mt-3">
