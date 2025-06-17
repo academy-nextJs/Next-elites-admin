@@ -1,28 +1,35 @@
-import { useEffect, useState } from "react";
-import { Edit3, Trash2 } from "react-feather";
-import { Button, Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
+import { useState } from "react";
+import { MessageSquare, Trash2 } from "react-feather";
+import { Button } from "reactstrap";
 import ReusableModal from "../../@core/common/Modal";
 import Popover from "../../@core/common/Popver";
+import { deleteContactMessage } from "../../utility/services/api/get/ContactUS";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ContactPopover = ({ ContactUS }) => {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editedMessage, setEditedMessage] = useState(ContactUS.message);
-  const [editedTitle, setEditedTitle] = useState(ContactUS.title);
+  const [modalOpen, setModalOpen] = useState(false);
 
+  const queryClient = useQueryClient();
+
+  const toggleViewModal = () => setModalOpen((prev) => !prev);
   const toggleDeleteModal = () => setIsOpenDeleteModal((prev) => !prev);
-  const toggleEditModal = () => setEditModalOpen((prev) => !prev);
 
-  useEffect(() => {
-    setEditedMessage(ContactUS.message);
-    setEditedTitle(ContactUS.title);
-  }, [ContactUS]);
+  const handleDelete = async () => {
+    try {
+      await deleteContactMessage(ContactUS.id);
+      queryClient.invalidateQueries(["CONTACTMESSAGE"]);
+      toggleDeleteModal();
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
 
   const actionDropdownItems = [
     {
-      label: "ویرایش",
-      icon: Edit3,
-      onClick: toggleEditModal,
+      label: "مشاهده کامل",
+      icon: MessageSquare,
+      onClick: toggleViewModal,
     },
     {
       label: "حذف",
@@ -32,20 +39,18 @@ const ContactPopover = ({ ContactUS }) => {
     },
   ];
 
-  const handleMessageChange = (e) => setEditedMessage(e.target.value);
-  const handleTitleChange = (e) => setEditedTitle(e.target.value);
-
   return (
     <>
       <Popover items={actionDropdownItems} />
-
       <ReusableModal
         isOpen={isOpenDeleteModal}
         toggle={toggleDeleteModal}
         bodyContent={<p>آیا از حذف کردن این پیام مطمئنید؟</p>}
         footerActions={
           <>
-            <Button color="danger">بله</Button>
+            <Button color="danger" onClick={handleDelete}>
+              بله
+            </Button>
             <Button onClick={toggleDeleteModal} color="secondary">
               خیر
             </Button>
@@ -54,66 +59,23 @@ const ContactPopover = ({ ContactUS }) => {
       />
 
       <ReusableModal
-        isOpen={editModalOpen}
-        toggle={toggleEditModal}
+        isOpen={modalOpen}
+        toggle={toggleViewModal}
         bodyContent={
-          <Form>
-            <Row>
-              <Col md={12}>
-                <FormGroup>
-                  <Label
-                    for="title"
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: "16px",
-                      color: "#333",
-                    }}
-                  >
-                    عنوان پیام
-                  </Label>
-                  <Input
-                    id="title"
-                    type="text"
-                    value={editedTitle}
-                    onChange={handleTitleChange}
-                    placeholder="عنوان جدید پیام"
-                    className="mb-3"
-                  />
-                </FormGroup>
-              </Col>
-
-              <Col md={12}>
-                <FormGroup>
-                  <Label
-                    for="message"
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: "16px",
-                      color: "#333",
-                    }}
-                  >
-                    پیام
-                  </Label>
-                  <Input
-                    id="message"
-                    type="textarea"
-                    value={editedMessage}
-                    onChange={handleMessageChange}
-                    placeholder="ویرایش پیام"
-                    rows={5}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-          </Form>
-        }
-        footerActions={
-          <>
-            <Button color="primary">تایید</Button>
-            <Button onClick={toggleEditModal} color="secondary">
-              لغو
-            </Button>
-          </>
+          <div className="py-1 px-2 bg-light rounded-3 shadow-sm border border-muted">
+            <h5 className="text-dark fw-bold">{ContactUS.title}</h5>
+            <p
+              className=""
+              style={{
+                whiteSpace: "pre-wrap",
+                fontSize: "15px",
+                lineHeight: "1.6",
+                marginBottom: "0",
+              }}
+            >
+              {ContactUS.message}
+            </p>
+          </div>
         }
       />
     </>
