@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useCallback, useState } from "react";
-import { Eye, MessageSquare } from "react-feather";
+import { MessageSquare } from "react-feather";
 import {
   Col,
   FormGroup,
@@ -10,23 +10,21 @@ import {
   PaginationItem,
   PaginationLink,
 } from "reactstrap";
-import ReusableModal from "../@core/common/Modal";
 import ReusableTable from "../@core/common/Table";
 import { getAllContactMessage } from "../utility/services/api/get/ContactUS";
 import ContactPopover from "../views/Contact-popover";
 
 const ContactUsMessagesList = React.memo(() => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState(null);
-  const toggleModalOpen = () => setModalOpen((prev) => !prev);
+  const [limit, setLimit] = useState(5);
+  const [page, setPage] = useState(1);
 
   const {
     data: ContactUsData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["CONTACTMESSAGE"],
-    queryFn: getAllContactMessage,
+    queryKey: ["CONTACTMESSAGE", { page, limit }],
+    queryFn: () => getAllContactMessage({ page, limit }),
   });
 
   const headers = ["شناسه", "عنوان", "پیام", ""];
@@ -36,18 +34,14 @@ const ContactUsMessagesList = React.memo(() => {
       <>
         <td>{ContactUS.id}</td>
         <td>{ContactUS.title}</td>
-        <td style={{ maxWidth: "150px" }} className="text-truncate text-right">
-          {ContactUS.message}
+        <td className="">
+          <div className="w-100 d-flex align-items-center justify-content-center">
+            <p style={{ maxWidth: "200px" }} className="m-0 text-truncate">
+              {ContactUS.message}
+            </p>
+          </div>
         </td>
         <td className="d-flex align-items-center justify-content-center">
-          <Eye
-            onClick={() => {
-              setSelectedMessage(ContactUS);
-              setModalOpen(true);
-            }}
-            className="cursor-pointer text-primary"
-            size={18}
-          />
           <ContactPopover
             ContactUS={ContactUS}
             style={{ marginRight: "10px" }}
@@ -69,7 +63,7 @@ const ContactUsMessagesList = React.memo(() => {
             pageTitle={
               <div className="d-inline-flex gap-1 align-items-center">
                 <MessageSquare size={35} />
-                <h1>مدیریت پیام‌های کاربران</h1>
+                <h1>مدیریت پیام‌های کاربران ({ContactUsData.totalCount})</h1>
               </div>
             }
             headerContent={
@@ -81,9 +75,15 @@ const ContactUsMessagesList = React.memo(() => {
                   </FormGroup>
                   <FormGroup>
                     <Label htmlFor="limit"> تعداد:</Label>
-                    <Input type="select" id="limit">
+                    <Input
+                      type="select"
+                      id="limit"
+                      value={limit}
+                      onChange={(e) => setLimit(Number(e.target.value))}
+                    >
                       <option value={5}>5</option>
                       <option value={10}>10</option>
+                      <option value={15}>15</option>
                     </Input>
                   </FormGroup>
                 </div>
@@ -94,40 +94,23 @@ const ContactUsMessagesList = React.memo(() => {
             renderRow={renderRow}
           />
           <Pagination className="mt-3">
-            <PaginationItem>
-              <PaginationLink>قبلی</PaginationLink>
+            <PaginationItem disabled={page === 1}>
+              <PaginationLink
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              >
+                قبلی
+              </PaginationLink>
             </PaginationItem>
-            <PaginationItem>
-              <PaginationLink>بعدی</PaginationLink>
+            <PaginationItem
+              disabled={page * limit >= ContactUsData?.totalCount}
+            >
+              <PaginationLink onClick={() => setPage((prev) => prev + 1)}>
+                بعدی
+              </PaginationLink>
             </PaginationItem>
           </Pagination>
         </>
       )}
-
-      <ReusableModal
-        isOpen={modalOpen}
-        toggle={toggleModalOpen}
-        bodyContent={
-          selectedMessage ? (
-            <div className="py-3 px-4 bg-light rounded-3 shadow-sm border border-muted">
-              <h5 className="text-dark fw-bold">{selectedMessage.title}</h5>
-              <p
-                className="text-muted"
-                style={{
-                  whiteSpace: "pre-wrap",
-                  fontSize: "15px",
-                  lineHeight: "1.6",
-                  marginBottom: "0",
-                }}
-              >
-                {selectedMessage.message}
-              </p>
-            </div>
-          ) : (
-            <p>در حال بارگذاری پیام...</p>
-          )
-        }
-      />
     </div>
   );
 });
