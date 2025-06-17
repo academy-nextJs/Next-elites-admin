@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 // ** Reactstrap Imports
 import { Badge, Button, Card, CardBody } from "reactstrap";
@@ -10,9 +10,9 @@ import { Book, Star } from "react-feather";
 // ** Styles
 import "@styles/react/libs/react-select/_react-select.scss";
 import formatToPersianDate from "../../utility/helper/format-date";
-import { getTransactionType } from "../../utility/helper/transaction-type";
-import { Link } from "react-router-dom";
 import { formatNumber } from "../../utility/helper/format-number";
+import { getTransactionType } from "../../utility/helper/transaction-type";
+import { getAllBookings } from "../../utility/services/api/get/Bookings";
 
 const HouseInfoCard = ({ houseData }) => {
   function getRandomBadgeColor() {
@@ -27,6 +27,40 @@ const HouseInfoCard = ({ houseData }) => {
     const randomIndex = Math.floor(Math.random() * colors.length);
     return colors[randomIndex];
   }
+  const transactionType = getTransactionType(houseData.transaction_type);
+  const houseDetail = [
+    { title: "نام فروشنده:", desc: houseData.sellerName },
+    {
+      title: "آخرین تغییرات:",
+      desc: formatToPersianDate(houseData.last_updated),
+    },
+    { title: "نشانی:", desc: houseData.address },
+    { title: "قیمت:", desc: formatNumber(houseData.price) + " تومان" },
+    { title: "ظرفیت:", desc: houseData.capacity + " نفر" },
+    {
+      title: "دسته بندی:",
+      desc: houseData.categories ? houseData.categories.name : "",
+    },
+    { title: "تعداد حمام:", desc: houseData.bathrooms + " حمام" },
+    { title: "تعداد پارکینگ:", desc: houseData.parking + " پارکینگ" },
+    { title: "تعداد اتاق:", desc: houseData.rooms + " اتاق" },
+    { title: "نوع حیاط:", desc: houseData.yard_type },
+    {
+      title: "تعداد نظرات:",
+      desc:
+        houseData.num_comments == 1
+          ? "یکی"
+          : houseData.num_comments == 0
+          ? "بدون نظر"
+          : houseData.num_comments + " تا",
+    },
+    {
+      title: "نوع پرداخت:",
+      desc: transactionType ? transactionType.text : "درحال پردازش...",
+    },
+  ];
+
+
   return (
     houseData && (
       <Fragment>
@@ -52,9 +86,14 @@ const HouseInfoCard = ({ houseData }) => {
                       className="d-flex gap-1"
                       style={{ paddingTop: "15px" }}
                     >
-                      <Badge color="primary" className="text-capitalize">
-                        {getTransactionType(houseData.transaction_type)}
-                      </Badge>
+                      {transactionType && (
+                        <Badge
+                          color={transactionType.color}
+                          className="text-capitalize"
+                        >
+                          {transactionType.text}
+                        </Badge>
+                      )}
                       {houseData?.tags &&
                         houseData?.tags.map((item, index) => {
                           return (
@@ -91,60 +130,12 @@ const HouseInfoCard = ({ houseData }) => {
             <h4 className="fw-bolder border-bottom pb-50 mb-1">مشخصات</h4>
             <div className="info-container">
               <ul className="list-unstyled">
-                <li className="mb-75">
-                  <span className="fw-bolder me-25"> نام فروشنده:</span>
-                  <span>
-                    <Link to={`/users-list/${houseData.sellerId}`}>
-                      {houseData.sellerName}
-                    </Link>
-                  </span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25">آخرین تغییرات:</span>
-                  <span>{formatToPersianDate(houseData.last_updated)}</span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25">نشانی:</span>
-                  <span>{houseData.address}</span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25">قیمت:</span>
-                  <span>{formatNumber(houseData.price)} تومان</span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25">ظرفیت:</span>
-                  <span>{houseData.capacity} نفر</span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25">دسته بندی:</span>
-                  <span>
-                    {houseData.categories ? houseData.categories.name : ""}
-                  </span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25"> تعداد حمام:</span>
-                  <span>{houseData.bathrooms} حمام</span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25"> تعداد پارکینگ:</span>
-                  <span>{houseData.parking} پارکینگ</span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25"> تعداد اتاق:</span>
-                  <span>{houseData.rooms} اتاق</span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25"> نوع حیاط:</span>
-                  <span>{houseData.yard_type}</span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25"> تعداد کامنت:</span>
-                  <span>{houseData.num_comments} تا</span>
-                </li>
-                <li className="mb-75">
-                  <span className="fw-bolder me-25"> نوع پرداخت:</span>
-                  <span>{getTransactionType(houseData.transaction_type)}</span>
-                </li>
+                {houseDetail.map((item, index) => (
+                  <li key={index} className="mb-75">
+                    <span className="fw-bolder me-25">{item.title}</span>
+                    <span>{item.desc}</span>
+                  </li>
+                ))}
               </ul>
             </div>
             <div className="d-flex justify-content-center pt-2">

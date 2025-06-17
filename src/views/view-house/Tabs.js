@@ -7,9 +7,8 @@ import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 // ** Icons Imports
 import { Book, Map, MessageSquare } from "react-feather";
 import MapComponent from "../components/map/map";
-import { Marker } from "react-leaflet";
-
-// ** User Components
+import PropertReserves from "./PropertReserves";
+import PropertyComments from "./PropertyComments";
 
 const PropertyTab = ({ active, toggleTab, houseData }) => {
   return (
@@ -36,10 +35,10 @@ const PropertyTab = ({ active, toggleTab, houseData }) => {
       </Nav>
       <TabContent activeTab={active}>
         <TabPane tabId="1">
-          <div>رزرو ها</div>
+          <PropertReserves id={houseData.id} />
         </TabPane>
         <TabPane tabId="2">
-          <div>کامنت ها</div>
+          <PropertyComments id={houseData.id} />
         </TabPane>
         <TabPane tabId="3">
           <div className="w-100 h-50">
@@ -50,8 +49,7 @@ const PropertyTab = ({ active, toggleTab, houseData }) => {
                   houseData.location.lng,
                 ]}
                 initialZoom={5}
-              >
-              </MapComponent>
+              ></MapComponent>
             )}
           </div>
         </TabPane>

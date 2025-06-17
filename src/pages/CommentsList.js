@@ -10,12 +10,9 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
-  Tooltip,
 } from "reactstrap";
 import ReusableTable from "../@core/common/Table";
 import formatToPersianDate from "../utility/helper/format-date";
-import { getAllLocations } from "../utility/services/api/get/Comment";
-import { getUserById } from "../utility/services/api/get/Users";
 import CommentPopoverActions from "../views/comment-popover";
 
 const CommentsList = React.memo(() => {
@@ -58,15 +55,13 @@ const CommentsList = React.memo(() => {
       { sort, order, limit, page, ...(rating && { rating }) },
     ],
     queryFn: () =>
-      getAllLocations({ sort, order, limit, page, ...(rating && { rating }) }),
+      getAllComments({ sort, order, limit, page, ...(rating && { rating }) }),
     keepPreviousData: true,
   });
 
   const headers = ["عنوان", "توضیحات", "امتیاز", "تاریخ ایجاد", "عملیات"];
 
   const renderRow = useCallback((comment) => {
-
-
     return (
       <>
         <td

@@ -1,7 +1,7 @@
 // Interceptor
 import http from "../../../interceptor";
 
-export async function getAllLocations(params = {}) {
+export async function getAllComments(params = {}) {
   try {
     const response = await http.get(`/comments`, { params });
     return response;

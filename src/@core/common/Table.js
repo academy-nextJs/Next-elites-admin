@@ -42,7 +42,7 @@ const ReusableTable = React.memo(
           emptyState || (
             <tr>
               <td colSpan={headers.length} className="text-center py-4">
-                No data available
+                داده ای موجود نمیباشد
               </td>
             </tr>
           )
