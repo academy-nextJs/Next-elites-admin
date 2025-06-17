@@ -4,10 +4,13 @@ import { Button } from "reactstrap";
 import ReusableModal from "../../@core/common/Modal";
 import Popover from "../../@core/common/Popver";
 import { deleteContactMessage } from "../../utility/services/api/get/ContactUS";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ContactPopover = ({ ContactUS }) => {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const toggleViewModal = () => setModalOpen((prev) => !prev);
   const toggleDeleteModal = () => setIsOpenDeleteModal((prev) => !prev);
@@ -15,6 +18,7 @@ const ContactPopover = ({ ContactUS }) => {
   const handleDelete = async () => {
     try {
       await deleteContactMessage(ContactUS.id);
+      queryClient.invalidateQueries(["CONTACTMESSAGE"]);
       toggleDeleteModal();
     } catch (error) {
       console.error("Error deleting message:", error);
@@ -38,7 +42,6 @@ const ContactPopover = ({ ContactUS }) => {
   return (
     <>
       <Popover items={actionDropdownItems} />
-
       <ReusableModal
         isOpen={isOpenDeleteModal}
         toggle={toggleDeleteModal}
