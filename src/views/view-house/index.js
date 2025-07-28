@@ -12,6 +12,8 @@ import PropertyTab from "./Tabs";
 import "@styles/react/apps/app-users.scss";
 import { getHouseById } from "../../utility/services/api/get/Houses";
 import HouseInfoCard from "./PropertyInfoCard";
+import WarningModal from "../../@core/common/WarningModal";
+import EditModal from "../booking-popover/EditModal";
 
 const HouseDetailContainer = () => {
   // ** Hooks

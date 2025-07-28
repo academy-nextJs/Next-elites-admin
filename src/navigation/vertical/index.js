@@ -1,15 +1,13 @@
 import {
   Book,
   Box,
+  DollarSign,
   Home,
-  Image,
   Layers,
   List,
-  Map,
   MessageCircle,
   MessageSquare,
   Percent,
-  PlusCircle,
   Users,
 } from "react-feather";
 
@@ -20,12 +18,12 @@ export default [
     icon: <Home size={20} />,
     navLink: "/home",
   },
-  {
-    id: "chat",
-    title: "چت",
-    icon: <MessageSquare size={20} />,
-    navLink: "/apps/chat",
-  },
+  // {
+  //   id: "chat",
+  //   title: "چت",
+  //   icon: <MessageSquare size={20} />,
+  //   navLink: "/apps/chat",
+  // },
   {
     id: "houses",
     title: "املاک",
@@ -78,25 +76,25 @@ export default [
       },
     ],
   },
-  {
-    id: "tours",
-    title: "تورها",
-    icon: <Map />,
-    children: [
-      {
-        id: "toursList",
-        title: "لیست",
-        icon: <List size={50} />,
-        navLink: "/tours-management/list",
-      },
-      {
-        id: "toursCreate",
-        title: "ساخت",
-        icon: <PlusCircle size={50} />,
-        navLink: "/tours-management/create",
-      },
-    ],
-  },
+  // {
+  //   id: "tours",
+  //   title: "تورها",
+  //   icon: <Map />,
+  //   children: [
+  //     {
+  //       id: "toursList",
+  //       title: "لیست",
+  //       icon: <List size={50} />,
+  //       navLink: "/tours-management/list",
+  //     },
+  //     {
+  //       id: "toursCreate",
+  //       title: "ساخت",
+  //       icon: <PlusCircle size={50} />,
+  //       navLink: "/tours-management/create",
+  //     },
+  //   ],
+  // },
   {
     id: "locations",
     title: "مقاصد",
@@ -133,6 +131,19 @@ export default [
         title: "لیست",
         icon: <List size={50} />,
         navLink: "/comments-management/list",
+      },
+    ],
+  },
+  {
+    id: "payments",
+    title: "پرداختی ها",
+    icon: <DollarSign />,
+    children: [
+      {
+        id: "paymentsList",
+        title: "لیست",
+        icon: <List size={50} />,
+        navLink: "/payments-management/list",
       },
     ],
   },

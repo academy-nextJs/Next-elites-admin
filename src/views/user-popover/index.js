@@ -1,14 +1,15 @@
-import { Edit3, Trash2 } from "react-feather";
-import Popover from "../../@core/common/Popver";
-import ReusableModal from "../../@core/common/Modal";
-import { Button } from "reactstrap";
 import { useState } from "react";
+import { Edit3, Trash2, User } from "react-feather";
+import { Button } from "reactstrap";
+import ReusableModal from "../../@core/common/Modal";
+import Popover from "../../@core/common/Popver";
 
 const UserPopover = ({ id, refetch }) => {
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const toggleDeleteModal = () => {
     setIsOpenDeleteModal((prev) => !prev);
   };
+
   const actionDropdownItems = [
     {
       label: "ویرایش",
@@ -21,11 +22,20 @@ const UserPopover = ({ id, refetch }) => {
       className: "text-danger",
       onClick: () => toggleDeleteModal(),
     },
+    {
+      label: "تغییر نقش",
+      icon: User,
+      onClick: () => toggleDeleteModal(),
+    },
   ];
   const deleteFooterAction = (
     <>
-      <Button color="danger">بله</Button>
-      <Button color="secondary">خیر</Button>
+      <Button color="danger">
+        بله
+      </Button>
+      <Button color="secondary" onClick={toggleDeleteModal}>
+        خیر
+      </Button>
     </>
   );
   return (

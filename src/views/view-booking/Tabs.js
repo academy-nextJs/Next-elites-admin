@@ -41,11 +41,11 @@ const Tab = ({ active, toggleTab, data }) => {
             pageTitle={
               <div className="d-inline-flex gap-1 align-items-center">
                 <Users size={35} />
-                <h1>تعداد: {data.traveler_details.length} نفر</h1>
+                <h1>تعداد: {data.traveler_details?.length} نفر</h1>
               </div>
             }
             headers={headers}
-            data={data.traveler_details || []}
+            data={data?.traveler_details}
             renderRow={renderRow}
           />
         </TabPane>

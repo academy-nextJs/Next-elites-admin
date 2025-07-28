@@ -21,6 +21,7 @@ import { getItem } from "../../utility/services/local storage/storage.services";
 import { jwtDecode } from "jwt-decode";
 import CategoriesList from "../../pages/CategoriesList";
 import DiscountList from "../../pages/DiscountList";
+import PaymentList from "../../pages/PaymentList";
 
 const getLayout = {
   blank: <BlankLayout />,
@@ -131,6 +132,10 @@ const Routes = [
   {
     path: "/discounts-management/list",
     element: <DiscountList />,
+  },
+  {
+    path: "/payments-management/list",
+    element: <PaymentList />,
   },
   {
     path: "/login",

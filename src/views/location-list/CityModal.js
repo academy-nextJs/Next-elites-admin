@@ -42,7 +42,7 @@ const CityModal = ({ isOpen, toggle, onSubmit }) => {
 
   const footerActions = (
     <>
-      <Button color="primary" onClick={handleSubmit}>
+      <Button color="primary" onClick={() => handleSubmit()}>
         تایید
       </Button>
       <Button color="secondary" onClick={toggle}>

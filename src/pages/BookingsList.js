@@ -10,53 +10,13 @@ import BookingPopover from "../views/booking-popover";
 import { Link } from "react-router-dom";
 
 const BookingsList = React.memo(() => {
-  // const navigate = useNavigate();
-  // const location = useLocation();
-  // const searchParams = new URLSearchParams(location.search);
-  // const [discount_percentage, setDiscountPercentage] = useState(
-  //   searchParams.get("discount_percentage") || ""
-  // );
-  // const [code, setCode] = useState(searchParams.get("code") || "");
-  // const [limit, setLimit] = useState(parseInt(searchParams.get("limit")) || 5);
-  // const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
-
-  // const updateParams = useCallback(
-  //   (newParams) => {
-  //     const params = new URLSearchParams(newParams);
-  //     navigate({ search: params.toString() });
-  //   },
-  //   [navigate]
-  // );
-
-  // useEffect(() => {
-  //   const params = {
-  //     limit,
-  //     page,
-  //     code,
-  //     discount_percentage,
-  //   };
-  //   if (discount_percentage != null && discount_percentage !== "")
-  //     params.discount_percentage = discount_percentage;
-  //   if (code != null && code !== "") params.code = code;
-
-  //   updateParams(params);
-  // }, [limit, page, discount_percentage, code, updateParams]);
-
   const {
     data: bookingsData,
     isLoading,
     refetch,
     error,
   } = useQuery({
-    queryKey: [
-      "BOOKINGS",
-      // {
-      //   limit,
-      //   page,
-      //   ...(discount_percentage && { discount_percentage }),
-      //   ...(code && { code }),
-      // },
-    ],
+    queryKey: ["BOOKINGS"],
     queryFn: getAllBookings,
     keepPreviousData: true,
   });
@@ -80,15 +40,17 @@ const BookingsList = React.memo(() => {
           <Link to={`/bookings-management/${booking.id}`}>
             <Eye className="cursor-pointer" />
           </Link>
-          <BookingPopover travelersData={booking.traveler_details} />
+          <BookingPopover
+            booking={booking}
+            refetch={refetch}
+            id={booking.id}
+            status={booking.status}
+            travelersData={booking.traveler_details}
+          />
         </td>
       </>
     );
   }, []);
-
-  // const handlePageChange = useCallback((newPage) => {
-  //   setPage(newPage);
-  // }, []);
 
   return (
     <div>
@@ -106,7 +68,7 @@ const BookingsList = React.memo(() => {
               </div>
             }
             headers={headers}
-            data={bookingsData || []}
+            data={bookingsData.data || []}
             renderRow={renderRow}
           />
           <Pagination className="mt-3">

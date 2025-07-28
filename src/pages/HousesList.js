@@ -11,16 +11,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 import ErrorDisplay from "../@core/common/ErrorDisplay";
 import LoadingSpinner from "../@core/common/LoadingSpinner";
-import PaginationControls from "../@core/common/PageInationControls";
 import ReusableTable from "../@core/common/Table";
 import formatToPersianDate from "../utility/helper/format-date";
 import { getTransactionType } from "../utility/helper/transaction-type";
 import { getAllHouses } from "../utility/services/api/get/Houses";
-import HousePopover from "../views/house-popover";
 import Filters from "../views/houses-list/Filters";
 import EmptyState from "../@core/common/EmptyState";
 import { formatNumber } from "../utility/helper/format-number";
 import { Badge } from "reactstrap";
+import NoImage from "../assets/images/no.jpg";
 
 const HousesList = React.memo(() => {
   const navigate = useNavigate();
@@ -41,31 +40,27 @@ const HousesList = React.memo(() => {
     };
   });
 
-  // Debounce filters
   const [debouncedFilters] = useDebounce(filters, 3000);
-
   const prevFiltersRef = useRef(filters);
 
-  // Debounce search inputs
   const [searchInput, setSearchInput] = useState(filters.search);
   const [debounceSearch] = useDebounce(searchInput, 2000);
 
-  // Update filters when debounced values change
   useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      search: debounceSearch,
-      page: 1,
-    }));
+    if (filters.search !== debounceSearch) {
+      setFilters((prev) => ({
+        ...prev,
+        search: debounceSearch,
+        page: 1,
+      }));
+    }
   }, [debounceSearch]);
 
-  // Update URL when filters change
   const updateURL = useCallback(
     (newFilters) => {
       const params = new URLSearchParams();
       let hasChanges = false;
 
-      // Only include changed params
       Object.entries(newFilters).forEach(([key, value]) => {
         if (value !== prevFiltersRef.current[key]) {
           params.set(key, value.toString());
@@ -88,12 +83,15 @@ const HousesList = React.memo(() => {
   );
 
   useEffect(() => {
-    if (prevFiltersRef.current !== filters) {
+    const stringifiedPrev = JSON.stringify(prevFiltersRef.current);
+    const stringifiedCurrent = JSON.stringify(debouncedFilters);
+
+    if (stringifiedPrev !== stringifiedCurrent) {
       updateURL(debouncedFilters);
+      prevFiltersRef.current = debouncedFilters;
     }
   }, [debouncedFilters, updateURL]);
 
-  // Data fetching
   const {
     data: housesData,
     isLoading,
@@ -102,14 +100,19 @@ const HousesList = React.memo(() => {
     queryKey: ["HOUSES", filters],
     queryFn: () => getAllHouses(filters),
     keepPreviousData: true,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 
-  // Memoized table data
-  const tableData = useMemo(() => housesData || [], [housesData]);
-  const totalPages = useMemo(() => housesData?.totalCounts || 1, [housesData]);
+  const tableData = useMemo(
+    () => housesData?.houses || [],
+    [housesData?.houses]
+  );
 
-  // Handler for filter changes
+  const totalPages = useMemo(() => {
+    const totalCount = housesData?.totalCount ?? 0;
+    return Math.ceil(totalCount / filters.limit) || 1;
+  }, [housesData, filters.limit]);
+
   const handleFilterChange = useCallback((name, value) => {
     setFilters((prev) => ({
       ...prev,
@@ -118,22 +121,20 @@ const HousesList = React.memo(() => {
     }));
   }, []);
 
-  // Reset all filters
   const resetFilters = useCallback(() => {
     setFilters({
-      code: "",
-      discount_percentage: "",
+      search: "",
       limit: 5,
       page: 1,
       location: "",
       sort: "price",
-      order: "desc",
-      property_type: "",
+      order: "DESC",
+      propertyType: "",
+      transactionType: "",
     });
     setSearchInput("");
   }, []);
 
-  // Memoized components
   const filtersComponent = useMemo(
     () => (
       <Filters
@@ -145,17 +146,6 @@ const HousesList = React.memo(() => {
       />
     ),
     [filters, searchInput, handleFilterChange, resetFilters]
-  );
-
-  const paginationComponent = useMemo(
-    () => (
-      <PaginationControls
-        currentPage={filters.page}
-        totalPages={totalPages}
-        onPageChange={(page) => handleFilterChange("page", page)}
-      />
-    ),
-    [filters.page, totalPages, handleFilterChange]
   );
 
   const headers = useMemo(
@@ -183,7 +173,7 @@ const HousesList = React.memo(() => {
             width={100}
             height={60}
             className="rounded"
-            src={house.photos[0]}
+            src={house.photos !== null ? house.photos[0] : NoImage}
             alt={house.title}
             loading="lazy"
           />
@@ -211,7 +201,6 @@ const HousesList = React.memo(() => {
           <Link to={`/houses-management/${house.id}`}>
             <Eye className="cursor-pointer" />
           </Link>
-          <HousePopover style={{ marginRight: "10px" }} />
         </td>
       </>
     );
@@ -229,14 +218,18 @@ const HousesList = React.memo(() => {
             <h1>مدیریت املاک</h1>
           </div>
         }
+        headerStyle={{ whiteSpace: "nowrap", fontSize: "18px" }}
         headerContent={filtersComponent}
         headers={headers}
         data={tableData}
         renderRow={renderRow}
         rowKey={(house) => house.id}
         emptyState={<EmptyState onReset={resetFilters} />}
+        currentPage={filters.page}
+        totalPages={totalPages}
+        onPageChange={(page) => handleFilterChange("page", page)}
+        showPagination
       />
-      {paginationComponent}
     </div>
   );
 });

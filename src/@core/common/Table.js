@@ -1,5 +1,15 @@
 import React, { useMemo } from "react";
-import { Table, Card, CardHeader, Row, Col, CardTitle } from "reactstrap";
+import {
+  Table,
+  Card,
+  CardHeader,
+  Row,
+  Col,
+  CardTitle,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+} from "reactstrap";
 import { useSkin } from "../../utility/hooks/useSkin";
 import PropTypes from "prop-types";
 
@@ -15,6 +25,10 @@ const ReusableTable = React.memo(
     emptyState,
     className,
     tableClassName,
+    currentPage = 1,
+    totalPages,
+    onPageChange,
+    showPagination,
   }) => {
     const { skin } = useSkin();
 
@@ -25,7 +39,7 @@ const ReusableTable = React.memo(
           {headers.map((header, index) => (
             <th
               key={`header-${index}`}
-              style={headerStyle || { fontSize: "18px" }}
+              style={headerStyle || { fontSize: "18px", whiteSpace: "nowrap" }}
             >
               {header}
             </th>
@@ -60,7 +74,11 @@ const ReusableTable = React.memo(
       <Card className={className}>
         {(pageTitle || headerContent) && (
           <CardHeader className="border-bottom">
-            {pageTitle && <CardTitle tag="h4" className="w-100">{pageTitle}</CardTitle>}
+            {pageTitle && (
+              <CardTitle tag="h4" className="w-100">
+                {pageTitle}
+              </CardTitle>
+            )}
             {headerContent && (
               <Row className="mx-0 mt-1">
                 <Col>
@@ -83,6 +101,22 @@ const ReusableTable = React.memo(
             <thead>{memoizedHeaders}</thead>
             <tbody>{memoizedRows}</tbody>
           </Table>
+          {showPagination && totalPages > 1 && onPageChange && (
+            <div className="d-flex justify-content-center mt-3">
+              <Pagination>
+                {[...Array(totalPages)].map((_, index) => {
+                  const page = index + 1;
+                  return (
+                    <PaginationItem key={page} active={page === currentPage}>
+                      <PaginationLink onClick={() => onPageChange(page)}>
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+              </Pagination>
+            </div>
+          )}
         </div>
       </Card>
     );

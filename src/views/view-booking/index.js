@@ -5,20 +5,18 @@ import { Link, useParams } from "react-router-dom";
 // ** Reactstrap Imports
 import { Alert, Col, Row } from "reactstrap";
 
-// ** User View Components
-
 // ** Styles
 import "@styles/react/apps/app-users.scss";
 import { getBookingById } from "../../utility/services/api/get/Bookings";
 import BookingInfoCard from "./BookingInfoCard";
 import Tab from "./Tabs";
+import { useQuery } from "@tanstack/react-query";
 
 const ViewBookingContainer = () => {
   // ** Hooks
   const { id } = useParams();
 
   const [active, setActive] = useState("1");
-  const [bookingData, setBookingData] = useState({});
 
   const toggleTab = (tab) => {
     if (active !== tab) {
@@ -26,23 +24,19 @@ const ViewBookingContainer = () => {
     }
   };
 
-  const fetchBookingDetail = async () => {
-    const response = await getBookingById(id);
-    setBookingData(response);
-  };
+  const { data, refetch } = useQuery({
+    queryKey: ["GET_BOOKING"],
+    queryFn: () => getBookingById(id),
+  });
 
-  useEffect(() => {
-    fetchBookingDetail();
-  }, []);
-
-  return bookingData.id ? (
+  return data ? (
     <div className="app-user-view">
       <Row>
         <Col xl="4" lg="5" xs={{ order: 1 }} md={{ order: 0, size: 5 }}>
-          <BookingInfoCard data={bookingData} />
+          <BookingInfoCard refetch={refetch} data={data} id={id} />
         </Col>
         <Col xl="8" lg="7" xs={{ order: 0 }} md={{ order: 1, size: 7 }}>
-          <Tab data={bookingData} active={active} toggleTab={toggleTab} />
+          <Tab  data={data} active={active} toggleTab={toggleTab} />
         </Col>
       </Row>
     </div>

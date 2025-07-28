@@ -70,7 +70,7 @@ const TableBasic = ({ data, refetch }) => {
             </tr>
           </thead>
           <tbody>
-            {data?.map((category, index) => {
+            {data?.data.map((category, index) => {
               return (
                 <tr className="text-center" key={index}>
                   <td>{category.name}</td>

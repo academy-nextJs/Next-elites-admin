@@ -10,34 +10,6 @@ import { getAllUsers } from "../utility/services/api/get/Users";
 import UserPopover from "../views/user-popover";
 
 const UsersList = React.memo(() => {
-
-  // const navigate = useNavigate();
-  // const location = useLocation();
-  // const searchParams = new URLSearchParams(location.search);
-  // const [discount_percentage, setDiscountPercentage] = useState(
-  //   searchParams.get("discount_percentage") || ""
-  // );
-  // const [code, setCode] = useState(searchParams.get("code") || "");
-  // const [limit, setLimit] = useState(parseInt(searchParams.get("limit")) || 5);
-  // const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
-  // const queryKey = ["USERS", limit];
-
-  // const updateParams = useCallback(
-  //   (newParams) => {
-  //     const params = new URLSearchParams(newParams);
-  //     navigate({ search: params.toString() });
-  //   },
-  //   [navigate]
-  // );
-
-  // useEffect(() => {
-  //   const params = {
-  //     limit,
-  //     page,
-  //   };
-  //   updateParams(params);
-  // }, [limit, page]);
-
   const {
     data: usersData,
     isLoading,
@@ -75,15 +47,15 @@ const UsersList = React.memo(() => {
           <Link to={`/users-management/${user.id}`}>
             <Eye className="cursor-pointer" />
           </Link>
-          <UserPopover style={{ marginRight: "10px" }} />
+          <UserPopover
+            id={user.id}
+            refetch={refetch}
+            style={{ marginRight: "10px" }}
+          />
         </td>
       </>
     );
   }, []);
-
-  // const handlePageChange = useCallback((newPage) => {
-  //   setPage(newPage);
-  // }, []);
 
   return (
     <div>
@@ -101,7 +73,7 @@ const UsersList = React.memo(() => {
               </div>
             }
             headers={headers}
-            data={usersData.users || []}
+            data={usersData.data || []}
             renderRow={renderRow}
           />
           <Pagination className="mt-3">

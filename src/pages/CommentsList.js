@@ -14,6 +14,7 @@ import {
 import ReusableTable from "../@core/common/Table";
 import formatToPersianDate from "../utility/helper/format-date";
 import CommentPopoverActions from "../views/comment-popover";
+import { getAllComments } from "../utility/services/api/get/Comment";
 
 const CommentsList = React.memo(() => {
   const navigate = useNavigate();
@@ -117,67 +118,6 @@ const CommentsList = React.memo(() => {
                 <MessageCircle size={35} />
                 <h1>مدیریت نظرات</h1>
               </div>
-            }
-            headerContent={
-              <Col xs={12} md={9}>
-                <div className="d-flex flex-column flex-md-row align-items-center gap-2">
-                  <FormGroup>
-                    <Label for="sort">مرتب‌سازی بر اساس:</Label>
-                    <Input
-                      type="select"
-                      id="sort"
-                      value={sort}
-                      onChange={(e) => setSort(e.target.value)}
-                    >
-                      <option value="created_at">تاریخ ایجاد</option>
-                      <option value="rating">امتیاز</option>
-                    </Input>
-                  </FormGroup>
-
-                  <FormGroup>
-                    <Label for="order">ترتیب:</Label>
-                    <Input
-                      type="select"
-                      id="order"
-                      value={order}
-                      onChange={(e) => setOrder(e.target.value)}
-                    >
-                      <option value="DESC">نزولی</option>
-                      <option value="ASC">صعودی</option>
-                    </Input>
-                  </FormGroup>
-
-                  <FormGroup>
-                    <Label for="rating">امتیاز:</Label>
-                    <Input
-                      type="select"
-                      id="rating"
-                      value={rating}
-                      onChange={(e) => setRating(e.target.value)}
-                    >
-                      <option value="">همه</option>
-                      <option value="5">5</option>
-                      <option value="4">4</option>
-                      <option value="3">3</option>
-                      <option value="2">2</option>
-                      <option value="1">1</option>
-                    </Input>
-                  </FormGroup>
-
-                  <FormGroup>
-                    <Label for="limit">تعداد:</Label>
-                    <Input
-                      type="select"
-                      id="limit"
-                      value={limit}
-                      onChange={(e) => setLimit(parseInt(e.target.value))}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                    </Input>
-                  </FormGroup>
-                </div>
-              </Col>
             }
             headers={headers}
             data={commentsData.data || []}
