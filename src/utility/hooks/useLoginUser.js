@@ -25,7 +25,7 @@ export const useLoginUser = () => {
     mutationKey: ["LOGIN_USER"],
     mutationFn: (params) =>
       toast.promise(LoginUser(params), {
-        pending: "درحال پردازش",
+        loading: "درحال پردازش",
       }),
     onSuccess: async (response) => {
       toast.success("ورود با موفقیت انجام شد");

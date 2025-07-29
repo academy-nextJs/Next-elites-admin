@@ -1,64 +1,140 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useState, useCallback, useEffect } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { MessageSquare } from "react-feather";
-import {
-  Col,
-  FormGroup,
-  Input,
-  Label,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-} from "reactstrap";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDebounce } from "use-debounce";
 import ReusableTable from "../@core/common/Table";
 import { getAllContactMessage } from "../utility/services/api/get/ContactUS";
 import ContactPopover from "../views/Contact-popover";
+import Filters from "../views/contact-us-list/Filter";
+import ErrorDisplay from "../@core/common/ErrorDisplay";
+import LoadingSpinner from "../@core/common/LoadingSpinner";
+import EmptyState from "../@core/common/EmptyState";
 
-// Main component for displaying Contact Us messages
 const ContactUsMessagesList = React.memo(() => {
-  // State hooks for managing pagination, limit, and search term
-  const [limit, setLimit] = useState(5); // Pagination limit
-  const [page, setPage] = useState(1); // Current page number
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
-  const [debouncedTerm, setDebouncedTerm] = useState(""); // State to hold debounced search term
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [timeoutId, setTimeoutId] = useState(null); // Timeout state to store the ID for debouncing
-
-  // Function to handle the debounced search
-  const debouncedSearch = useCallback(
-    (term) => {
-      // Clear previous timeout if it exists
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-
-      // Set a new timeout to call the API after 1500ms
-      const id = setTimeout(() => {
-        setDebouncedTerm(term); // Update the debounced search term
-      }, 1500); // Delay 1500ms after the last keystroke
-
-      // Save the timeoutId for future cancellation
-      setTimeoutId(id);
-    },
-    [timeoutId]
-  );
-
-  // Query to fetch contact messages data based on pagination, limit, and debounced searchTerm
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["CONTACTMESSAGE", { page, limit, debouncedTerm }],
-    queryFn: () =>
-      getAllContactMessage({
-        page,
-        limit,
-        title: debouncedTerm.trim() || undefined, // Send empty title if only spaces
-      }),
-    enabled: debouncedTerm !== undefined, // Ensure query is triggered only when debouncedTerm is updated
+  // Initialize state from URL
+  const [filters, setFilters] = useState(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return {
+      title: searchParams.get("title") || "",
+      limit: parseInt(searchParams.get("limit")) || 5,
+      page: parseInt(searchParams.get("page")) || 1,
+    };
   });
 
-  // Table headers
-  const headers = ["شناسه", "عنوان", "پیام", ""];
+  const [debouncedFilters] = useDebounce(filters, 3000);
+  const prevFiltersRef = useRef(filters);
 
-  // Function to render each row of the table
+  const [searchInput, setSearchInput] = useState(filters.title);
+  const [debounceSearch] = useDebounce(searchInput, 2000);
+
+  useEffect(() => {
+    if (filters.title !== debounceSearch) {
+      setFilters((prev) => ({
+        ...prev,
+        title: debounceSearch,
+        page: 1,
+      }));
+    }
+  }, [debounceSearch]);
+
+  const updateURL = useCallback(
+    (newFilters) => {
+      const params = new URLSearchParams();
+      let hasChanges = false;
+
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value !== prevFiltersRef.current[key]) {
+          params.set(key, value.toString());
+          hasChanges = true;
+        }
+      });
+
+      if (hasChanges) {
+        navigate(
+          { search: params.toString() },
+          {
+            replace: true,
+            state: { preserveScroll: true },
+          }
+        );
+        prevFiltersRef.current = newFilters;
+      }
+    },
+    [navigate]
+  );
+
+  useEffect(() => {
+    const stringifiedPrev = JSON.stringify(prevFiltersRef.current);
+    const stringifiedCurrent = JSON.stringify(debouncedFilters);
+
+    if (stringifiedPrev !== stringifiedCurrent) {
+      updateURL(debouncedFilters);
+      prevFiltersRef.current = debouncedFilters;
+    }
+  }, [debouncedFilters, updateURL]);
+
+  const { title, ...restFilters } = filters;
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["CONTACT_MESSAGE", filters],
+    queryFn: () =>
+      getAllContactMessage({
+        ...(title?.trim() ? { title: title } : {}),
+        ...restFilters,
+      }),
+    keepPreviousData: true,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const tableData = useMemo(() => data?.data || [], [data?.data]);
+
+  const totalPages = useMemo(() => {
+    const totalCount = data?.totalCount ?? 0;
+    return Math.ceil(totalCount / filters.limit) || 1;
+  }, [data, filters.limit]);
+
+  const handleFilterChange = useCallback((name, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name !== "page" && { page: 1 }),
+    }));
+  }, []);
+
+  const resetFilters = useCallback(() => {
+    setFilters({
+      title: "",
+      limit: 5,
+      page: 1,
+    });
+    setSearchInput("");
+  }, []);
+
+  const filtersComponent = useMemo(
+    () => (
+      <Filters
+        filters={filters}
+        searchInput={searchInput}
+        onSearchChange={setSearchInput}
+        onFilterChange={handleFilterChange}
+        onReset={resetFilters}
+      />
+    ),
+    [filters, searchInput, handleFilterChange, resetFilters]
+  );
+
+  const headers = useMemo(() => ["شناسه", "عنوان", "پیام", ""], []);
+
   const renderRow = useCallback((ContactUS) => {
     return (
       <>
@@ -76,85 +152,32 @@ const ContactUsMessagesList = React.memo(() => {
     );
   }, []);
 
-  // Handlers for pagination and limit change
-  const handleLimitChange = (e) => setLimit(Number(e.target.value)); // Update pagination limit
-  const handlePaginationClick = (direction) => {
-    setPage((prev) => Math.max(prev + direction, 1)); // Update page number for pagination
-  };
-
-  // Function to handle input changes
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSearchTerm(value); // Update the search term immediately
-
-    // Trigger debounced search to prevent excessive API calls
-    debouncedSearch(value);
-  };
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <ErrorDisplay error={error} />;
 
   return (
     <div>
-      {isLoading ? (
-        <p>در حال بارگذاری...</p> // Loading state
-      ) : error ? (
-        <p>خطا در دریافت پیام‌ها</p> // Error state
-      ) : (
-        <>
-          <ReusableTable
-            pageTitle={
-              <div className="d-inline-flex gap-1 align-items-center">
-                <MessageSquare size={35} />
-                <h1>مدیریت پیام‌های کاربران ({data.totalCount})</h1>
-              </div>
-            }
-            headerContent={
-              <Col xs={20} md={20}>
-                <div className="d-flex flex-column flex-md-row align-items-center gap-2">
-                  <FormGroup>
-                    <Label htmlFor="search">جستجو:</Label>
-                    <Input
-                      type="text"
-                      id="search"
-                      value={searchTerm} // Bind input value to searchTerm state
-                      onChange={handleInputChange} // Handle input changes
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label htmlFor="limit">تعداد:</Label>
-                    <Input
-                      type="select"
-                      id="limit"
-                      value={limit}
-                      onChange={handleLimitChange} // Handle limit change
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={15}>15</option>
-                    </Input>
-                  </FormGroup>
-                </div>
-              </Col>
-            }
-            headers={headers}
-            data={data?.data || []} // Display data from the query
-            renderRow={renderRow} // Use renderRow function for each row
-          />
-          <Pagination className="mt-3">
-            <PaginationItem disabled={page === 1}>
-              <PaginationLink onClick={() => handlePaginationClick(-1)}>
-                قبلی
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem disabled={page * limit >= data?.totalCount}>
-              <PaginationLink onClick={() => handlePaginationClick(1)}>
-                بعدی
-              </PaginationLink>
-            </PaginationItem>
-          </Pagination>
-        </>
-      )}
+      <ReusableTable
+        pageTitle={
+          <div className="d-inline-flex gap-1 align-items-center">
+            <MessageSquare size={35} />
+            <h1>مدیریت پیام‌های کاربران ({data.totalCount})</h1>
+          </div>
+        }
+        headerStyle={{ whiteSpace: "nowrap", fontSize: "18px" }}
+        headerContent={filtersComponent}
+        headers={headers}
+        data={tableData}
+        renderRow={renderRow}
+        rowKey={(house) => house.id}
+        emptyState={<EmptyState onReset={resetFilters} />}
+        currentPage={filters.page}
+        totalPages={totalPages}
+        onPageChange={(page) => handleFilterChange("page", page)}
+        showPagination
+      />
     </div>
   );
 });
 
 export default ContactUsMessagesList;
-

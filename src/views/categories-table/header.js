@@ -24,24 +24,7 @@ const PageHeader = ({ refetch }) => {
     updateParams({ name: search, limit });
   }, [search, limit]);
 
-  const toggleModal = () => setModalOpen(!modalOpen);
 
-  const handleModalSubmit = () => {
-    mutate({ name: newCategoryName });
-  };
-
-  const { mutate } = useMutation({
-    mutationKey: ["POST_CATEGORIES"],
-    mutationFn: (data) =>
-      toast.promise(createCategory(data), {
-        pending: "درحال پردازش",
-      }),
-    onSuccess: () => {
-      toast.success("دسته‌بندی شما با موفقیت افزوده شد");
-      refetch();
-      toggleModal();
-    },
-  });
 
   return (
     <div className="w-100">

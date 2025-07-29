@@ -6,9 +6,9 @@ import http from "../../../interceptor";
  * @param params Object containing query parameters like `page` and `limit`
  * @returns response with array of objects including all bookings.
  */
-export async function getAllBookings() {
+export async function getAllBookings(params) {
   try {
-    const response = await http.get(`/admin/bookings`);
+    const response = await http.get(`/admin/bookings`, { params });
     return response;
   } catch (error) {
     console.error("Error fetching bookings:", error);

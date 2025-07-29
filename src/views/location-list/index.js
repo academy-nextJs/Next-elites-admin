@@ -154,8 +154,8 @@ const LocationListContainer = React.memo(() => {
         <td className="d-flex gap-1 align-items-center">
           <p className="fw-bolder">{location.area_name}</p>
         </td>
-        <td>{location.lat || "نا معتبر"}</td>
-        <td>{location.lng || "نا معتبر"}</td>
+        <td>{Number(location.lat).toFixed(1) || "نا معتبر"}</td>
+        <td>{Number(location.lng).toFixed(1) || "نا معتبر"}</td>
         <td>
           <LocationPopover
             refetch={refetch}
