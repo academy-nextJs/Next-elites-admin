@@ -109,14 +109,14 @@ const CategoriesList = () => {
     mutationFn: () => {
       toast.promise(deleteCategory(selectedCategory.id), {
         loading: "درحال پردازش",
+        success: "دسته بندی شما با موفقیت حذف شد",
+        error: "خطا !",
       });
     },
     onSuccess: () => {
-      toast.success("دسته بندی شما با موفقیت حذف شد");
-      toggleWarningModal();
       refetch();
+      toggleWarningModal();
     },
-    onError: () => toast.error("خطا !"),
   });
 
   const { mutate: handleEditSubmit } = useMutation({
@@ -131,16 +131,15 @@ const CategoriesList = () => {
         ),
         {
           loading: "درحال پردازش",
+          success: "دسته بندی شما با موفقیت ویرایش شد",
+          error: "خطا !",
         }
       );
     },
     onSuccess: () => {
-      toast.success("دسته بندی شما با موفقیت ویرایش شد");
-
-      toggleEditModal();
       refetch();
+      toggleEditModal();
     },
-    onError: () => toast.error("خطا !"),
   });
 
   const tableData = useMemo(() => data?.data || [], [data?.data]);

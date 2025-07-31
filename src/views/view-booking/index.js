@@ -33,10 +33,10 @@ const ViewBookingContainer = () => {
     <div className="app-user-view">
       <Row>
         <Col xl="4" lg="5" xs={{ order: 1 }} md={{ order: 0, size: 5 }}>
-          <BookingInfoCard refetch={refetch} data={data} id={id} />
+          <BookingInfoCard refetch={refetch} data={data.booking} id={id} />
         </Col>
         <Col xl="8" lg="7" xs={{ order: 0 }} md={{ order: 1, size: 7 }}>
-          <Tab  data={data} active={active} toggleTab={toggleTab} />
+          <Tab  data={data.booking} active={active} toggleTab={toggleTab} />
         </Col>
       </Row>
     </div>

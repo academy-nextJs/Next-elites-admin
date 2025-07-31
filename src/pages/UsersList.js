@@ -174,6 +174,7 @@ const UsersList = React.memo(() => {
             <Eye className="cursor-pointer" />
           </Link>
           <UserPopover
+            userRole={user.role}
             id={user.id}
             refetch={refetch}
             style={{ marginRight: "10px" }}

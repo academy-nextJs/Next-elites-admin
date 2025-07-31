@@ -1,15 +1,14 @@
 // ** React Imports
-import { Fragment, useCallback } from "react";
+import { Fragment } from "react";
 
 // ** Reactstrap Imports
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 
 // ** Icons Imports
-import { Users } from "react-feather";
-import ReusableTable from "../../@core/common/Table";
-import formatToPersianDate from "../../utility/helper/format-date";
-
-// ** User Components
+import { Book, DollarSign, Home } from "react-feather";
+import UserHouses from "./UserHouses";
+import UserPayments from "./UserPayments";
+import UserReserves from "./UserReserves";
 
 const Tab = ({ active, toggleTab, data }) => {
   return (
@@ -17,41 +16,32 @@ const Tab = ({ active, toggleTab, data }) => {
       <Nav pills className="mb-2">
         <NavItem>
           <NavLink active={active === "1"} onClick={() => toggleTab("1")}>
-            <Users className="font-medium-3 me-50" />
+            <Book className="font-medium-3 me-50" />
             <span className="fw-bold">رزرو ها</span>
           </NavLink>
         </NavItem>
         <NavItem>
           <NavLink active={active === "2"} onClick={() => toggleTab("2")}>
-            <Users className="font-medium-3 me-50" />
+            <DollarSign className="font-medium-3 me-50" />
             <span className="fw-bold">پرداختی ها</span>
           </NavLink>
         </NavItem>
         <NavItem>
-          <NavLink active={active === "3"} onClick={() => toggleTab("3")}>
-            <Users className="font-medium-3 me-50" />
-            <span className="fw-bold">ذخیره ها</span>
-          </NavLink>
-        </NavItem>
-        <NavItem>
           <NavLink active={active === "4"} onClick={() => toggleTab("4")}>
-            <Users className="font-medium-3 me-50" />
+            <Home className="font-medium-3 me-50" />
             <span className="fw-bold">ملک ها</span>
           </NavLink>
         </NavItem>
       </Nav>
       <TabContent activeTab={active}>
         <TabPane tabId="1">
-          <div>رزرو ها</div>
+          <UserReserves id={data?.id} />
         </TabPane>
         <TabPane tabId="2">
-          <div>پرداختی ها</div>
-        </TabPane>
-        <TabPane tabId="3">
-          <div>ذخیره ها</div>
+          <UserPayments id={data?.id} />
         </TabPane>
         <TabPane tabId="4">
-          <div>ملک ها</div>
+          <UserHouses id={data?.id} />
         </TabPane>
       </TabContent>
     </Fragment>

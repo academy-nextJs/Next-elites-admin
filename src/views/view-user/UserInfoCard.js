@@ -1,17 +1,77 @@
 // ** React Imports
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 // ** Reactstrap Imports
-import { Badge, Button, Card, CardBody } from "reactstrap";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  FormGroup,
+  Input,
+  Label,
+} from "reactstrap";
 
 // ** Styles
 import "@styles/react/libs/react-select/_react-select.scss";
 import avatar from "../../assets/images/avatars/10.png";
 import { getRoleColor } from "../../utility/helper/get-role-color";
 import formatToPersianDate from "../../utility/helper/format-date";
+import useDeleteUser from "../../utility/hooks/useDeleteUser";
+import ReusableModal from "../../@core/common/Modal";
+import useEditRole from "../../utility/hooks/useEditRole";
 
-const UserInfoCard = ({ data }) => {
+const rolesOptions = [
+  { value: "buyer", label: "خریدار" },
+  { value: "seller", label: "فروشنده" },
+  { value: "admin", label: "ادمین" },
+];
+
+const UserInfoCard = ({ data, fetchUserDetail }) => {
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
+  const [isEditModal, setIsEditModal] = useState(false);
+  const [roleOption, setRoleOption] = useState(data?.role);
+
+  const toggleDeleteModal = () => {
+    setIsOpenDeleteModal((prev) => !prev);
+  };
+
+  const toggleEditModal = () => {
+    setIsEditModal((prev) => !prev);
+  };
   const role = getRoleColor(data.role);
+
+  const { deleteUserAction } = useDeleteUser(
+    data.id,
+    fetchUserDetail,
+    toggleDeleteModal
+  );
+  const { editUserAction } = useEditRole(
+    roleOption,
+    data.id,
+    fetchUserDetail,
+    toggleEditModal
+  );
+  const deleteFooterAction = (
+    <>
+      <Button color="danger" onClick={deleteUserAction}>
+        بله
+      </Button>
+      <Button color="secondary" onClick={toggleDeleteModal}>
+        خیر
+      </Button>
+    </>
+  );
+  const editFooterAction = (
+    <>
+      <Button color="danger" onClick={editUserAction}>
+        بله
+      </Button>
+      <Button color="secondary" onClick={toggleEditModal}>
+        خیر
+      </Button>
+    </>
+  );
   return (
     data.id && (
       <Fragment>
@@ -76,13 +136,51 @@ const UserInfoCard = ({ data }) => {
               </ul>
             </div>
             <div className="d-flex justify-content-center pt-2">
-              <Button color="primary">ویرایش</Button>
-              <Button className="ms-1" color="danger" outline>
+              <Button color="primary" onClick={toggleEditModal}>
+                ویرایش
+              </Button>
+              <Button
+                className="ms-1"
+                onClick={toggleDeleteModal}
+                color="danger"
+                outline
+              >
                 حذف
               </Button>
             </div>
           </CardBody>
         </Card>
+        <ReusableModal
+          isOpen={isOpenDeleteModal}
+          toggle={toggleDeleteModal}
+          title="هشدار"
+          bodyContent={<p>آیا از حذف کردن این کاربر مطمعنید؟</p>}
+          footerActions={deleteFooterAction}
+        />
+        <ReusableModal
+          isOpen={isEditModal}
+          toggle={toggleEditModal}
+          title="ویرایش نقش"
+          bodyContent={
+            <FormGroup>
+              <Label htmlFor="role">نقش کاربر:</Label>
+              <Input
+                type="select"
+                id="role"
+                name="role"
+                value={roleOption}
+                onChange={(e) => setRoleOption(e.target.value)}
+              >
+                {rolesOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Input>
+            </FormGroup>
+          }
+          footerActions={editFooterAction}
+        />
       </Fragment>
     )
   );

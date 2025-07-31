@@ -8,8 +8,10 @@ import ReusableModal from "../../@core/common/Modal";
 import Popover from "../../@core/common/Popver";
 import { deleteComment } from "../../utility/services/api/delete/Comment";
 import { editComment } from "../../utility/services/api/put/Comment";
+import { useNavigate } from "react-router-dom";
 
-const CommentPopoverActions = ({ id, refetch, title, caption, rating }) => {
+const CommentPopoverActions = ({ id, refetch, title, caption, rating, userId, houseId }) => {
+  const navigate = useNavigate()
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [commentTitle, setCommentTitle] = useState(title);
@@ -93,17 +95,12 @@ const CommentPopoverActions = ({ id, refetch, title, caption, rating }) => {
     {
       label: "مشاهده کاربر",
       icon: User,
-      onClick: () => console.log("مشاهده کاربر clicked"),
+      onClick: () => navigate(`/users-management/${userId}`),
     },
     {
       label: "مشاهده ملک",
       icon: Home,
-      onClick: () => console.log("مشاهده ملک clicked"),
-    },
-    {
-      label: "مشاهده پاسخ ها",
-      icon: MessageCircle,
-      onClick: () => console.log("مشاهده پاسخ ها clicked"),
+      onClick: () => navigate(`/houses-management/${houseId}`),
     },
   ];
   const { mutate: deleteTableComment } = useMutation({

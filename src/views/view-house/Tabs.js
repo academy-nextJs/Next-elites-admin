@@ -49,7 +49,7 @@ const PropertyTab = ({ active, toggleTab, houseData }) => {
                   houseData.location.lng,
                 ]}
                 initialZoom={5}
-              ></MapComponent>
+              />
             )}
           </div>
         </TabPane>

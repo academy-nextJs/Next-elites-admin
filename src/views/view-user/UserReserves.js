@@ -6,25 +6,25 @@ import formatToPersianDate from "../../utility/helper/format-date";
 import { getAllBookings } from "../../utility/services/api/get/Bookings";
 import { Link } from "react-router-dom";
 
-const PropertReserves = ({ id }) => {
-  const [propertyBookings, setPropertyBookings] = useState([]);
-  const getPropertyBookings = async () => {
-    const response = await getAllBookings({ house_id: id });
-    setPropertyBookings(response?.data);
+const UserReserves = ({ id }) => {
+  const [userBookings, setUserBookings] = useState([]);
+  const getUsersBookings = async () => {
+    const response = await getAllBookings({ user_id: id });
+    setUserBookings(response?.data);
   };
   const headers = ["از", "تا", "عملیات"];
 
-  const renderRow = useCallback((house) => {
+  const renderRow = useCallback((user) => {
     return (
       <>
         <td>
-          {house.reservedDates
-            ? formatToPersianDate(house.reservedDates[0].value)
+          {user.reservedDates
+            ? formatToPersianDate(user.reservedDates[0].value)
             : ""}
         </td>
         <td>
-          {house.reservedDates
-            ? formatToPersianDate(house.reservedDates[1].value)
+          {user.reservedDates
+            ? formatToPersianDate(user.reservedDates[1].value)
             : ""}
         </td>
         <td>
@@ -37,21 +37,21 @@ const PropertReserves = ({ id }) => {
   }, []);
 
   useEffect(() => {
-    getPropertyBookings();
+    getUsersBookings();
   }, []);
   return (
     <ReusableTable
       pageTitle={
         <div className="d-inline-flex gap-1 align-items-center">
           <Book size={35} />
-          <h1>کاربرانی که این خانه را رزرو کردند</h1>
+          <h1>خانه هایی که این کاربر رزرو کرده است</h1>
         </div>
       }
       headers={headers}
-      data={propertyBookings}
+      data={userBookings}
       renderRow={renderRow}
-      emptyState={<Alert>کسی این خانه را رزرو نکرده است</Alert>}
+      emptyState={<Alert>این کاربر خانه ای را رزرو نکرده است</Alert>}
     />
   );
 };
-export default PropertReserves;
+export default UserReserves;

@@ -1,66 +1,135 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { MessageCircle } from "react-feather";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  Col,
-  FormGroup,
-  Input,
-  Label,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-} from "reactstrap";
+import { useDebounce } from "use-debounce";
+import ErrorDisplay from "../@core/common/ErrorDisplay";
+import LoadingSpinner from "../@core/common/LoadingSpinner";
 import ReusableTable from "../@core/common/Table";
 import formatToPersianDate from "../utility/helper/format-date";
-import CommentPopoverActions from "../views/comment-popover";
 import { getAllComments } from "../utility/services/api/get/Comment";
+import CommentPopoverActions from "../views/comment-popover";
+import EmptyState from "../@core/common/EmptyState";
+import Filters from "../views/comments-list/Filter";
 
 const CommentsList = React.memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const [sort, setSort] = useState(searchParams.get("sort") || "created_at");
-  const [order, setOrder] = useState(searchParams.get("order") || "DESC");
-  const [rating, setRating] = useState(searchParams.get("rating") || "");
-  const [limit, setLimit] = useState(parseInt(searchParams.get("limit")) || 5);
-  const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
 
-  const updateParams = useCallback(
-    (newParams) => {
-      const params = new URLSearchParams(newParams);
-      navigate({ search: params.toString() });
+  // Initialize state from URL
+  const [filters, setFilters] = useState(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return {
+      sort: searchParams.get("sort") || "created_at",
+      limit: parseInt(searchParams.get("limit")) || 15,
+      page: parseInt(searchParams.get("page")) || 1,
+      order: searchParams.get("order") || "DESC",
+      rating: parseInt(searchParams.get("rating")) || "",
+    };
+  });
+
+  const [debouncedFilters] = useDebounce(filters, 3000);
+  const prevFiltersRef = useRef(filters);
+
+  const updateURL = useCallback(
+    (newFilters) => {
+      const params = new URLSearchParams();
+      let hasChanges = false;
+
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value !== prevFiltersRef.current[key]) {
+          params.set(key, value.toString());
+          hasChanges = true;
+        }
+      });
+
+      if (hasChanges) {
+        navigate(
+          { search: params.toString() },
+          {
+            replace: true,
+            state: { preserveScroll: true },
+          }
+        );
+        prevFiltersRef.current = newFilters;
+      }
     },
     [navigate]
   );
 
   useEffect(() => {
-    const params = {
-      sort,
-      order,
-      limit,
-      page,
-    };
-    if (rating != null && rating !== "") params.rating = rating;
-    updateParams(params);
-  }, [sort, order, rating, limit, page, updateParams]);
+    const stringifiedPrev = JSON.stringify(prevFiltersRef.current);
+    const stringifiedCurrent = JSON.stringify(debouncedFilters);
 
+    if (stringifiedPrev !== stringifiedCurrent) {
+      updateURL(debouncedFilters);
+      prevFiltersRef.current = debouncedFilters;
+    }
+  }, [debouncedFilters, updateURL]);
+
+  const { rating, ...restFilters } = filters;
   const {
     data: commentsData,
     isLoading,
     refetch,
     error,
   } = useQuery({
-    queryKey: [
-      "comments",
-      { sort, order, limit, page, ...(rating && { rating }) },
-    ],
+    queryKey: ["comments", filters],
     queryFn: () =>
-      getAllComments({ sort, order, limit, page, ...(rating && { rating }) }),
+      getAllComments({ ...restFilters, ...(rating && { rating }) }),
     keepPreviousData: true,
+    staleTime: 1000 * 60 * 5,
   });
 
-  const headers = ["عنوان", "توضیحات", "امتیاز", "تاریخ ایجاد", "عملیات"];
+  const tableData = useMemo(
+    () => commentsData?.data || [],
+    [commentsData?.data]
+  );
+
+  const totalPages = useMemo(() => {
+    const totalCount = commentsData?.totalCount ?? 0;
+    return Math.ceil(totalCount / filters.limit) || 1;
+  }, [commentsData, filters.limit]);
+
+  const handleFilterChange = useCallback((name, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name !== "page" && { page: 1 }),
+    }));
+  }, []);
+
+  const resetFilters = useCallback(() => {
+    setFilters({
+      rating: "",
+      limit: 15,
+      page: 1,
+      sort: "created_at",
+      order: "DESC",
+    });
+  }, []);
+
+  const filtersComponent = useMemo(
+    () => (
+      <Filters
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onReset={resetFilters}
+      />
+    ),
+    [filters, handleFilterChange, resetFilters]
+  );
+
+  const headers = useMemo(
+    () => ["عنوان", "توضیحات", "امتیاز", "تاریخ ایجاد", "عملیات"],
+    []
+  );
 
   const renderRow = useCallback((comment) => {
     return (
@@ -93,6 +162,8 @@ const CommentsList = React.memo(() => {
             caption={comment.caption}
             rating={comment.rating}
             id={comment.id}
+            userId={comment.user_id}
+            houseId={comment.house_id}
             refetch={refetch}
           />
         </td>
@@ -100,43 +171,30 @@ const CommentsList = React.memo(() => {
     );
   }, []);
 
-  const handlePageChange = useCallback((newPage) => {
-    setPage(newPage);
-  }, []);
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <ErrorDisplay error={error} />;
 
   return (
     <div>
-      {isLoading ? (
-        <p>در حال بارگذاری...</p>
-      ) : error ? (
-        <p>خطا در دریافت نظرات</p>
-      ) : (
-        <>
-          <ReusableTable
-            pageTitle={
-              <div className="d-inline-flex gap-1 align-items-center">
-                <MessageCircle size={35} />
-                <h1>مدیریت نظرات</h1>
-              </div>
-            }
-            headers={headers}
-            data={commentsData.data || []}
-            renderRow={renderRow}
-          />
-          <Pagination className="mt-3">
-            <PaginationItem disabled={page <= 1}>
-              <PaginationLink onClick={() => handlePageChange(page - 1)}>
-                قبلی
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink onClick={() => handlePageChange(page + 1)}>
-                بعدی
-              </PaginationLink>
-            </PaginationItem>
-          </Pagination>
-        </>
-      )}
+      <ReusableTable
+        pageTitle={
+          <div className="d-inline-flex gap-1 align-items-center">
+            <MessageCircle size={35} />
+            <h1>مدیریت نظرات</h1>
+          </div>
+        }
+        headerStyle={{ whiteSpace: "nowrap", fontSize: "18px" }}
+        headerContent={filtersComponent}
+        headers={headers}
+        data={tableData}
+        renderRow={renderRow}
+        rowKey={(house) => house.id}
+        emptyState={<EmptyState onReset={resetFilters} />}
+        currentPage={filters.page}
+        totalPages={totalPages}
+        onPageChange={(page) => handleFilterChange("page", page)}
+        showPagination
+      />
     </div>
   );
 });

@@ -16,6 +16,16 @@ export async function getAllHouses(params = {}) {
   }
 }
 
+export async function getAllAdminHouses(params = {}) {
+  try {
+    const response = await http.get(`/admin/houses`, { params });
+    return response;
+  } catch (error) {
+    console.error("Error fetching houses:", error);
+    throw error;
+  }
+}
+
 export async function getHouseById(id) {
   try {
     const response = await http.get(`/houses/${id}`);

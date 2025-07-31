@@ -1,25 +1,32 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { MessageSquare, Trash2, User } from "react-feather";
+import { Book, Check, MessageSquare, Trash2, User } from "react-feather";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { Button } from "reactstrap";
 import ReusableModal from "../../@core/common/Modal";
 import Popover from "../../@core/common/Popver";
 import { deletePayment } from "../../utility/services/api/delete/Payments";
-import EditPaymentModal from "./EditPaymentModal";
 import { editPayment } from "../../utility/services/api/put/Payment";
-import { useNavigate } from "react-router-dom";
+import EditPaymentModal from "./EditPaymentModal";
+import { verifyPayment } from "../../utility/services/api/post/PaymentVerify";
+import WarningModal from "../../@core/common/WarningModal";
 
 const PaymentPopover = ({ refetch, id, payment }) => {
   const navigate = useNavigate();
   const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+  const [isOpenVerifyModal, setIsOpenVerifyModal] = useState(false);
   const toggleDeleteModal = () => {
     setIsOpenDeleteModal((prev) => !prev);
   };
 
   const toggleEditModal = () => {
     setIsOpenEditModal((prev) => !prev);
+  };
+
+  const toggleVerifyModal = () => {
+    setIsOpenVerifyModal((prev) => !prev);
   };
 
   const { mutate: handleEdit } = useMutation({
@@ -54,7 +61,20 @@ const PaymentPopover = ({ refetch, id, payment }) => {
     onSuccess: () => refetch(),
   });
 
+  const { mutate: verify } = useMutation({
+    mutationKey: ["VERIFY_PAYMENT"],
+
+    mutationFn: () =>
+      toast.promise(verifyPayment(id), {
+        loading: "درحال تایید",
+        success: "با موفقیت تایید شد",
+        error: "خطا در حذف",
+      }),
+    onSuccess: () => refetch(),
+  });
+
   const actionDropdownItems = [
+    { label: "تایید", icon: Check, onClick: toggleVerifyModal },
     {
       label: " ویرایش",
       icon: MessageSquare,
@@ -67,9 +87,14 @@ const PaymentPopover = ({ refetch, id, payment }) => {
       onClick: toggleDeleteModal,
     },
     {
-      label: "کاربر",
+      label: "مشاهده کاربر",
       icon: User,
-      onClick: navigate(`/users-management/${payment.user_id}`),
+      onClick: () => navigate(`/users-management/${payment.userId}`),
+    },
+    {
+      label: "مشاهده رزرو",
+      icon: Book,
+      onClick: () => navigate(`/bookings-management/${payment.bookingId}`),
     },
   ];
 
@@ -79,7 +104,7 @@ const PaymentPopover = ({ refetch, id, payment }) => {
       <ReusableModal
         isOpen={isOpenDeleteModal}
         toggle={toggleDeleteModal}
-        bodyContent={<p>آیا از حذف کردن این ایتم مطمئنید؟</p>}
+        bodyContent={<p>آیا از حذف کردن این پرداخت مطمئنید؟</p>}
         footerActions={
           <>
             <Button color="danger" onClick={handleDelete}>
@@ -96,6 +121,13 @@ const PaymentPopover = ({ refetch, id, payment }) => {
         onSubmit={handleEdit}
         toggle={toggleEditModal}
         isOpen={isOpenEditModal}
+      />
+      <WarningModal
+        message="آیا از تایید کردن این پرداخت مطمعنید؟"
+        title="هشدار"
+        isOpen={isOpenVerifyModal}
+        toggle={toggleVerifyModal}
+        onConfirm={verify}
       />
     </>
   );
